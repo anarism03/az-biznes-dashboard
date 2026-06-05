@@ -17,9 +17,11 @@ export function KpiCard({ label, value, unit, change, changeText, source, tone =
       </div>
       <Statistic
         value={value}
-        precision={unit.includes('AZN') ? 1 : 1}
+        precision={1}
         suffix={unit}
-        styles={{ content: { color: '#101828', fontWeight: 800, letterSpacing: 0 } }}
+        styles={{
+          content: { color: 'var(--text-primary)', fontWeight: 700, letterSpacing: '-0.02em' },
+        }}
       />
       <small>{source}</small>
     </div>

@@ -1,17 +1,11 @@
 import { Card, Progress, Steps, Tag } from 'antd'
 import { CheckCircle2, ShieldCheck } from 'lucide-react'
 import { ChartCard } from '../components/ui/ChartCard.jsx'
-import { PageIntro } from '../components/ui/PageIntro.jsx'
 import { governanceLayers } from '../data/dashboardData.js'
 
 export function GovernancePage() {
   return (
     <div className="page-stack">
-      <PageIntro
-        eyebrow="Data governance · ETL · semantik model"
-        title="Dashboardun etibarı datanın keyfiyyətindən başlayır."
-        description="Bu bölmədə məlumatın mənbədən ekrana qədər necə hazırlandığı, kim tərəfindən yoxlandığı və qərara necə qoşulduğu göstərilir."
-      />
 
       <ChartCard title="Dashboardun data xətti" subtitle="Mənbədən göstəriciyə, göstəricidən qərara">
         <div className="architecture-flow">

@@ -13,7 +13,6 @@ import {
   YAxis,
 } from 'recharts'
 import { ChartCard } from '../components/ui/ChartCard.jsx'
-import { PageIntro } from '../components/ui/PageIntro.jsx'
 import { annualOfficialMacro } from '../data/dashboardData.js'
 import { azNumber } from '../utils/formatters.js'
 
@@ -34,11 +33,6 @@ export function EmpiricalStudyPage() {
 
   return (
     <div className="page-stack">
-      <PageIntro
-        eyebrow="Fəsil III · Rəsmi data ilə müqayisə"
-        title="İllər üzrə fərq rəsmi makro göstəricilərdən oxunur."
-        description="Bu səhifədə sorğu və şirkət datası uydurulmur. Hazırda panel Dövlət Statistika Komitəsinin dərc etdiyi illik və cari dövr göstəricilərini müqayisə edir."
-      />
 
       <Alert
         type="info"
@@ -71,28 +65,28 @@ export function EmpiricalStudyPage() {
       <div className="analytics-grid">
         <ChartCard title="ÜDM və qeyri-neft/qaz ÜDM" subtitle="Tam il göstəriciləri: 2021-2025">
           <ResponsiveContainer width="100%" height={320}>
-            <AreaChart data={comparisonRows} margin={{ top: 12, right: 12, left: -16, bottom: 0 }}>
-              <CartesianGrid stroke="#e4e7ec" strokeDasharray="4 4" vertical={false} />
-              <XAxis dataKey="year" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `${azNumber(value / 1000, 0)} mlrd`} />
+            <AreaChart data={comparisonRows} margin={{ top: 12, right: 12, left: 10, bottom: 0 }}>
+              <CartesianGrid stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" vertical={false} />
+              <XAxis dataKey="year" tickLine={false} axisLine={false} tick={{ fill: '#64748b' }} />
+              <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `${azNumber(value / 1000, 0)} mlrd`} tick={{ fill: '#64748b' }} />
               <Tooltip formatter={(value) => `${azNumber(value, 1)} mln AZN`} />
               <Legend />
-              <Area type="monotone" dataKey="gdp" name="ÜDM" stroke="#0f766e" fill="#99f6e4" fillOpacity={0.42} />
-              <Area type="monotone" dataKey="nonOilGdp" name="Qeyri-neft/qaz ÜDM" stroke="#2563eb" fill="#bfdbfe" fillOpacity={0.36} />
+              <Area type="monotone" dataKey="gdp" name="ÜDM" stroke="#14b8a6" fill="#14b8a6" fillOpacity={0.12} />
+              <Area type="monotone" dataKey="nonOilGdp" name="Qeyri-neft/qaz ÜDM" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.1} />
             </AreaChart>
           </ResponsiveContainer>
         </ChartCard>
 
         <ChartCard title="Real artım fərqləri" subtitle="Tam il göstəriciləri: 2021-2025">
           <ResponsiveContainer width="100%" height={320}>
-            <BarChart data={comparisonRows} margin={{ top: 12, right: 12, left: -16, bottom: 0 }}>
-              <CartesianGrid stroke="#e4e7ec" strokeDasharray="4 4" vertical={false} />
-              <XAxis dataKey="year" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} />
+            <BarChart data={comparisonRows} margin={{ top: 12, right: 12, left: 10, bottom: 0 }}>
+              <CartesianGrid stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" vertical={false} />
+              <XAxis dataKey="year" tickLine={false} axisLine={false} tick={{ fill: '#64748b' }} />
+              <YAxis tickLine={false} axisLine={false} tick={{ fill: '#64748b' }} />
               <Tooltip formatter={(value) => `${azNumber(value, 1)}%`} />
               <Legend />
-              <Bar dataKey="growth" name="ÜDM artımı" fill="#0f766e" radius={[6, 6, 0, 0]} />
-              <Bar dataKey="nonOilGrowth" name="Qeyri-neft/qaz artımı" fill="#2563eb" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="growth" name="ÜDM artımı" fill="#14b8a6" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="nonOilGrowth" name="Qeyri-neft/qaz artımı" fill="#3b82f6" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -114,7 +108,7 @@ export function EmpiricalStudyPage() {
       {currentRows.length > 0 && (
         <ChartCard title="2026 cari dövr" subtitle="Tam il deyil, yanvar-aprel dövrü üzrə rəsmi göstəricidir">
           <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={currentRows} margin={{ top: 12, right: 12, left: -16, bottom: 0 }}>
+            <BarChart data={currentRows} margin={{ top: 12, right: 12, left: 10, bottom: 0 }}>
               <CartesianGrid stroke="#e4e7ec" strokeDasharray="4 4" vertical={false} />
               <XAxis dataKey="period" tickLine={false} axisLine={false} />
               <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `${azNumber(value / 1000, 0)} mlrd`} />

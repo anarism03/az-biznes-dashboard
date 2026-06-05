@@ -10,7 +10,6 @@ import {
   YAxis,
 } from 'recharts'
 import { ChartCard } from '../components/ui/ChartCard.jsx'
-import { PageIntro } from '../components/ui/PageIntro.jsx'
 import { platformComparison } from '../data/dashboardData.js'
 
 const columns = [
@@ -31,11 +30,6 @@ export function ToolComparisonPage() {
 
   return (
     <div className="page-stack">
-      <PageIntro
-        eyebrow="Fəsil II · Tableau, Power BI, Looker və açıq mənbə"
-        title="BI aləti seçimi yalnız texniki müqayisə ilə bitmir."
-        description="Platformalar governance, semantik model, inteqrasiya, xərc və xüsusi vizuallaşdırma kriteriyaları üzrə qiymətləndirilib."
-      />
 
       <div className="analytics-grid two-one">
         <ChartCard title="Platforma skoru" subtitle="5 kriteriyanın orta balı">
@@ -52,10 +46,10 @@ export function ToolComparisonPage() {
 
         <Card className="tool-pick-card" variant="borderless">
           <Tag color="green">Tövsiyə</Tag>
-          <h3>Dissertasiya prototipi üçün hibrid yanaşma</h3>
+          <h3>Biznes analitikası üçün hibrid yanaşma</h3>
           <p>
-            Korporativ tətbiqdə Power BI və ya Looker governance üstünlüyü verir. Elmi prototip və
-            xüsusi interaktiv qrafiklər üçün React + Recharts/D3 yanaşması daha çevikdir.
+            Korporativ tətbiqdə Power BI və ya Looker idarəetmə üstünlüyü verir. Müasir biznes və
+            xüsusi interaktiv qrafiklər üçün React + Recharts/D3 yanaşması daha çevik və sürətlidir.
           </p>
           <div className="mini-score">
             <span>Governance</span>
@@ -69,7 +63,7 @@ export function ToolComparisonPage() {
       </div>
 
       <ChartCard title="Funksional müqayisə cədvəli" subtitle="Sıralana bilən seçim matrisi">
-        <Table columns={columns} dataSource={platformComparison} pagination={false} scroll={{ x: 980 }} />
+        <Table columns={columns} dataSource={platformComparison} pagination={false} />
       </ChartCard>
 
       <ChartCard title="Kriteriyalar üzrə detal müqayisə" subtitle="Platformaların güclü və zəif tərəfləri">

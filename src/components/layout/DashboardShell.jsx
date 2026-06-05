@@ -13,9 +13,14 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Search,
+  Sun,
+  Moon,
+  Flame,
+  Info,
 } from 'lucide-react'
 import { chapterMap, sectors, sourceLinks, years } from '../../data/dashboardData.js'
 import { useDashboardFilters } from '../../hooks/useDashboardFilters.js'
+import { useTheme } from '../../contexts/ThemeContext.jsx'
 import {
   copySummary,
   exportDashboardCsv,
@@ -23,7 +28,7 @@ import {
   exportDashboardJson,
 } from '../../utils/exportData.js'
 
-const { Header, Sider, Content } = Layout
+const { Header, Sider, Content, Footer } = Layout
 
 const navigation = [
   { key: '/', label: 'İcra paneli', icon: <Gauge size={18} /> },
@@ -32,6 +37,7 @@ const navigation = [
   { key: '/empirical-study', label: 'Empirik analiz', icon: <BrainCircuit size={18} /> },
   { key: '/governance', label: 'Data governance', icon: <DatabaseZap size={18} /> },
   { key: '/reports', label: 'Hesabat və mənbələr', icon: <FileText size={18} /> },
+  { key: '/about', label: 'Haqqımızda', icon: <Info size={18} /> },
 ]
 
 function useMediaQuery(query) {
@@ -57,7 +63,12 @@ export function DashboardShell() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [query, setQuery] = useState('')
   const filters = useDashboardFilters()
+  const { theme, toggleTheme } = useTheme()
   const isCompact = useMediaQuery('(max-width: 980px)')
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [location.pathname])
 
   const selectedKey = useMemo(() => {
     const match = navigation.find((item) => item.key !== '/' && location.pathname.startsWith(item.key))
@@ -67,10 +78,20 @@ export function DashboardShell() {
   const activeTitle = navigation.find((item) => item.key === selectedKey)?.label || 'İcra paneli'
 
   const searchIndex = useMemo(() => {
+    const pageDescriptions = {
+      '/': 'Əsas icra və performans paneli',
+      '/kpi-framework': 'Biznes modelləri və KPI arxitekturası',
+      '/tools': 'Müxtəlif analitik platformaların texniki müqayisəsi',
+      '/empirical-study': 'Biznes göstəricilərinin empirik analizi',
+      '/governance': 'Data idarəetməsi, ETL və semantik model',
+      '/reports': 'Mənbələr, hesabatlar və metodologiya',
+      '/about': 'Platforma və məqsədimiz haqqında məlumat',
+    }
+
     const pageItems = navigation.map((item) => ({
       title: item.label,
       route: item.key,
-      text: `${item.label} dashboard KPI data vizuallaşdırma biznes analiz`,
+      text: pageDescriptions[item.key] || `${item.label} modulu`,
     }))
     const chapterItems = chapterMap.map((chapter) => ({
       title: chapter.subtitle,
@@ -135,87 +156,121 @@ export function DashboardShell() {
   }
 
   return (
-    <Layout className="app-shell">
+    <Layout className="min-h-screen bg-base text-text-primary transition-colors duration-250 overflow-x-hidden min-w-0">
       {!isCompact && (
-        <Sider width={292} collapsedWidth={86} collapsed={collapsed} className="app-sider">
-          <Link to="/" className="brand-lockup" aria-label="Ana səhifə">
-            <div className="brand-mark">
-              <BookOpenCheck size={22} />
+        <Sider width={292} collapsedWidth={86} collapsed={collapsed} className="border-r border-border bg-surface transition-all duration-300 !border-r-border !bg-surface sticky top-0 h-screen overflow-y-auto">
+          <Link to="/" className={`flex items-center ${collapsed ? 'justify-center px-0' : 'gap-3 px-4'} pt-5 pb-4 border-b border-border decoration-none transition-colors duration-250`} aria-label="Ana səhifə">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0 shadow-md transition-shadow duration-250 bg-gradient-to-br from-[#00b5e2] via-[#e4002b] to-[#009b77]">
+              <Flame size={22} />
             </div>
             {!collapsed && (
               <div>
-                <span>Vizual BI Lab</span>
-                <small>Dissertasiya dashboardu</small>
+                <span className="block text-base font-extrabold text-text-primary leading-tight transition-colors duration-250">AzərDash</span>
+                <small className="block text-[11px] font-medium text-text-secondary leading-tight mt-0.5 transition-colors duration-250">Biznes Analitika</small>
               </div>
             )}
           </Link>
 
           <Menu
-            theme="dark"
             mode="inline"
             selectedKeys={[selectedKey]}
             items={menuItems}
             onClick={({ key }) => handleNavigate(key)}
+            className="border-none bg-transparent px-2 mt-2"
           />
 
-          <div className="sider-status">
-            <Badge status="processing" color="#2dd4bf" />
-            {!collapsed && (
-              <div>
-                <strong>Filtrli panel</strong>
-                <span>Filtr dəyişəndə panel yenilənir</span>
-              </div>
-            )}
-          </div>
+          
         </Sider>
       )}
 
-      <Layout>
-        <Header className="app-header">
-          <div className="header-left">
-            <Button
-              type="text"
-              icon={collapsed ? <PanelLeftOpen size={19} /> : <PanelLeftClose size={19} />}
-              onClick={() => (isCompact ? setMobileNavOpen(true) : setCollapsed((value) => !value))}
-              aria-label="Menyunu dəyiş"
-            />
-            <div>
-              <h1>{activeTitle}</h1>
-              <p>Biznes datasının vizual analizi və qərar paneli</p>
+      <Layout className="overflow-x-hidden min-w-0">
+        <Header className="flex flex-col md:flex-row md:items-center justify-between px-0 md:px-6 py-3 md:py-0 gap-3 border-b border-border backdrop-blur-md sticky top-0 z-[100] bg-surface shadow-sm transition-all duration-250 h-auto min-h-[64px] !leading-normal !bg-surface/85 w-full max-w-full">
+          <div className="flex items-center justify-between w-full md:w-auto px-4 md:px-0">
+            <div className="flex items-center gap-2">
+              <Button
+                type="text"
+                icon={collapsed ? <PanelLeftOpen size={20} /> : <PanelLeftClose size={20} />}
+                onClick={() => (isCompact ? setMobileNavOpen(true) : setCollapsed((value) => !value))}
+                aria-label="Menyunu dəyiş"
+                className="text-text-primary flex items-center justify-center hover:bg-hover !text-text-primary !px-2 !-ml-2"
+              />
+              <div>
+                <h2 className="text-[17px] font-bold text-text-primary m-0 transition-colors duration-250 line-clamp-1">{activeTitle}</h2>
+                {!isCompact && <p className="text-xs text-text-secondary m-0 transition-colors duration-250">Biznes datasının vizual analizi və qərar paneli</p>}
+              </div>
             </div>
+            
+            {isCompact && (
+              <div className="flex items-center gap-1">
+                <Button type="text" icon={theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />} onClick={toggleTheme} className="!text-text-secondary hover:!text-teal" />
+                <Button type="text" icon={<Search size={18} />} onClick={() => setSearchOpen(true)} className="!text-text-secondary hover:!text-teal" />
+                <Dropdown menu={exportMenu} trigger={['click']}>
+                  <Button type="text" icon={<Download size={18} />} className="!text-text-secondary hover:!text-teal" />
+                </Dropdown>
+              </div>
+            )}
           </div>
 
-          <div className="header-actions">
-            <button className="live-pill" type="button" onClick={() => message.info('Panel yalnız seçilən filtrə görə yenilənir')}>
-              <Badge status="processing" color="#0f766e" />
-              <span>Filtr aktiv</span>
-            </button>
-            <Button icon={<Search size={17} />} onClick={() => setSearchOpen(true)}>Axtarış</Button>
-            <Dropdown menu={exportMenu} trigger={['click']}>
-              <Button icon={<Download size={17} />}>Yüklə</Button>
-            </Dropdown>
+          <div className={`flex items-center gap-3 ${isCompact ? 'w-full overflow-x-auto no-scrollbar px-4 pb-1' : ''}`}>
+            {!isCompact && (
+              <div className="flex items-center gap-2 mr-2">
+                <button className="flex items-center justify-center w-9 h-9 rounded-lg border border-border-md bg-card text-text-secondary cursor-pointer transition-all duration-200 hover:bg-hover hover:text-teal hover:border-teal" onClick={toggleTheme} aria-label="Temanı dəyiş">
+                  {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+                </button>
+                <Button icon={<Search size={17} />} onClick={() => setSearchOpen(true)}>Axtarış</Button>
+                <Dropdown menu={exportMenu} trigger={['click']}>
+                  <Button icon={<Download size={17} />}>Yüklə</Button>
+                </Dropdown>
+              </div>
+            )}
+            
             <Segmented
               value={filters.year}
               onChange={filters.setYear}
               options={years}
-              className="year-switch"
+              className="year-switch shrink-0"
+              size={isCompact ? 'small' : 'middle'}
             />
             <Select
               value={filters.sector}
               onChange={filters.setSector}
               options={sectors.map((item) => ({ label: item, value: item }))}
-              className="sector-select"
+              className="sector-select shrink-0 min-w-[130px]"
+              size={isCompact ? 'small' : 'middle'}
+              popupMatchSelectWidth={false}
             />
           </div>
         </Header>
 
-        <Content className="app-content">
+        <Content className="p-4 md:p-6 max-w-[1440px] mx-auto w-full transition-colors duration-250 overflow-hidden">
           <Outlet context={filters} />
         </Content>
+
+        <Footer className="text-center bg-surface border-t border-border px-6 py-6 transition-colors duration-250">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 max-w-[1440px] mx-auto text-sm text-text-secondary">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-text-primary">AzərDash</span> © {new Date().getFullYear()}
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
+              <Link to="/about" className="hover:text-teal transition-colors">Haqqımızda</Link>
+              <Link to="/reports" className="hover:text-teal transition-colors">Hesabat və mənbələr</Link>
+              <a href="mailto:ismayilzadeanar310@gmail.com" className="hover:text-teal transition-colors">ismayilzadeanar310@gmail.com</a>
+              <a href="tel:+994504496536" className="hover:text-teal transition-colors">+994 50 449 65 36</a>
+              <a href="https://linkedin.com/in/anarismayilzada" target="_blank" rel="noreferrer" className="hover:text-teal transition-colors">LinkedIn</a>
+            </div>
+          </div>
+        </Footer>
       </Layout>
 
       <Drawer
-        title="Vizual BI Lab"
+        title={
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white shrink-0 shadow-md bg-gradient-to-br from-[#00b5e2] via-[#e4002b] to-[#009b77]">
+              <Flame size={18} />
+            </div>
+            <span className="text-base font-extrabold text-text-primary">AzərDash</span>
+          </div>
+        }
         placement="left"
         open={mobileNavOpen}
         onClose={() => setMobileNavOpen(false)}
@@ -242,7 +297,7 @@ export function DashboardShell() {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           prefix={<Search size={18} />}
-          placeholder="KPI, governance, Power BI, Fəsil III..."
+          placeholder="Məsələn: KPI, governance, Power BI, gəlir..."
           autoFocus
         />
         <div className="search-result-list">
@@ -251,14 +306,15 @@ export function DashboardShell() {
               <button
                 key={`${item.route}-${item.title}`}
                 type="button"
+                className="w-full text-left p-3 mb-2 rounded-xl border border-border bg-base hover:bg-hover hover:border-teal transition-all duration-200 cursor-pointer flex flex-col group"
                 onClick={() => {
                   navigate(item.route)
                   setSearchOpen(false)
                   setQuery('')
                 }}
               >
-                <strong>{item.title}</strong>
-                <span>{item.text}</span>
+                <strong className="text-sm text-text-primary group-hover:text-teal transition-colors block">{item.title}</strong>
+                <span className="text-xs text-text-secondary mt-1 block">{item.text}</span>
               </button>
             ))
           ) : (

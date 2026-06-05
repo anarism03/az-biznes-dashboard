@@ -274,19 +274,19 @@ export const governanceLayers = [
 
 export const chapterMap = [
   {
-    title: 'Fəsil I',
-    subtitle: 'Nəzəri-metodoloji əsaslar',
-    points: ['Tufte və data-ink ratio', 'Gestalt prinsipləri', 'Vizuallaşdırma taksonomiyası', 'Ənənəvi hesabatla müqayisə'],
+    title: 'Modul I',
+    subtitle: 'Strateji Analitika Mərkəzi',
+    points: ['Real vaxtda KPI izlənməsi', 'Risklərin idarə edilməsi', 'Proqnozlaşdırma modelləri', 'Maliyyə və əməliyyat hesabatları'],
   },
   {
-    title: 'Fəsil II',
-    subtitle: 'Alətlər və analitik istifadə',
-    points: ['Tableau, Power BI, Looker', 'KPI çərçivəsi', 'D3.js və Vega-Lite', 'Seçim metodologiyası'],
+    title: 'Modul II',
+    subtitle: 'Data İdarəetməsi və İnteqrasiya',
+    points: ['Məlumat arxitekturası', 'Bulud əsaslı sistemlər', 'Avtomatlaşdırılmış ETL prosesləri', 'Məlumat təhlükəsizliyi'],
   },
   {
-    title: 'Fəsil III',
-    subtitle: 'Empirik tədqiqat',
-    points: ['Sorğu dizaynı', 'Statistik analiz', 'Vizual interpretasiya', 'Qərar keyfiyyəti və performans'],
+    title: 'Modul III',
+    subtitle: 'Vizual Analiz və Qərarlar',
+    points: ['İnteraktiv qrafiklər', 'Trend analizləri', 'Gələcək biznes ssenariləri', 'Performans göstəriciləri'],
   },
 ]
 
@@ -324,8 +324,8 @@ export const sourceLinks = [
     url: 'https://thedocs.worldbank.org/en/doc/79a6c37b829d34f7b13d9f2ebf162626-0080012026/original/AZE-MEU-APR-2026.pdf',
   },
   {
-    name: 'Dissertasiya DOCX',
-    detail: 'Biznesdə data vizuallaşdırma və dashboard analizinin nəzəri-metodoloji əsasları.',
-    url: 'C:/Users/HOME/Desktop/Biznes_data_vizuallasdirma_I_fesil_redakte kopyası.docx',
+    name: 'KPMG Qlobal Hesabatı',
+    detail: 'Qlobal iqtisadi artım və maliyyə bazarlarında biznes analitikası tətbiqi.',
+    url: 'https://home.kpmg/xx/en/home/insights.html',
   },
 ]

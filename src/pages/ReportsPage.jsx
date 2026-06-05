@@ -1,7 +1,6 @@
 import { Card, Descriptions, Table, Tag } from 'antd'
 import { ExternalLink } from 'lucide-react'
 import { ChartCard } from '../components/ui/ChartCard.jsx'
-import { PageIntro } from '../components/ui/PageIntro.jsx'
 import { chapterMap, recommendations, sourceLinks } from '../data/dashboardData.js'
 
 const sourceColumns = [
@@ -20,11 +19,6 @@ const sourceColumns = [
 export function ReportsPage() {
   return (
     <div className="page-stack">
-      <PageIntro
-        eyebrow="Nəticə · Mənbələr · Tətbiq xəritəsi"
-        title="Layihə dissertasiya strukturunu dashboard səhifələrinə bölür."
-        description="Bu səhifədə fəsillərin hansı modullara uyğun gəldiyi, hansı mənbələrdən istifadə edildiyi və əsas tövsiyələr verilib."
-      />
 
       <div className="chapter-grid">
         {chapterMap.map((chapter) => (
@@ -58,7 +52,7 @@ export function ReportsPage() {
             <Descriptions.Item label="Format">Çox səhifəli React dashboard</Descriptions.Item>
             <Descriptions.Item label="UI sistemi">Tailwind CSS + Ant Design tokenləri</Descriptions.Item>
             <Descriptions.Item label="Qrafiklər">Recharts, interaktiv tooltip, filtrli dataset</Descriptions.Item>
-            <Descriptions.Item label="Mövzu">Biznesdə data vizuallaşdırma və dashboard analizi</Descriptions.Item>
+            <Descriptions.Item label="Mövzu">Rəqəmsal Biznes Analitikası və İdarəetmə Paneli</Descriptions.Item>
           </Descriptions>
         </Card>
       </div>
