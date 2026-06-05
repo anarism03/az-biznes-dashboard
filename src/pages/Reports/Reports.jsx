@@ -1,7 +1,7 @@
 import { Card, Descriptions, Table, Tag } from 'antd'
 import { ExternalLink } from 'lucide-react'
-import { ChartCard } from '../components/ui/ChartCard.jsx'
-import { chapterMap, recommendations, sourceLinks } from '../data/dashboardData.js'
+import { ChartCard } from '../../components/ui/ChartCard.jsx'
+import { chapterMap, recommendations, sourceLinks } from '../../data/dashboardData.js'
 
 const sourceColumns = [
   {
@@ -16,16 +16,16 @@ const sourceColumns = [
   { title: 'İstifadə məqsədi', dataIndex: 'detail' },
 ]
 
-export function ReportsPage() {
+export function Reports() {
   return (
     <div className="page-stack">
 
-      <div className="chapter-grid">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {chapterMap.map((chapter) => (
-          <Card key={chapter.title} className="chapter-card" variant="borderless">
+          <Card key={chapter.title} className="bg-card border border-border shadow-sm" variant="borderless">
             <Tag color="cyan">{chapter.title}</Tag>
             <h3>{chapter.subtitle}</h3>
-            <ul className="plain-list">
+            <ul className="mt-4 flex flex-col gap-2 pl-0 list-none m-0 text-text-secondary text-[13px]">
               {chapter.points.map((item) => (
                 <li key={item}>{item}</li>
               ))}
@@ -34,27 +34,18 @@ export function ReportsPage() {
         ))}
       </div>
 
-      <div className="analytics-grid">
+      <div className="flex flex-col gap-6 mt-2">
         <ChartCard title="Nəticə və təkliflər" subtitle="Praktiki tətbiq üçün tövsiyələr">
-          <ol className="recommendation-list">
+          <ol className="flex flex-col gap-3 pl-0 list-none m-0 text-[14px] text-text-secondary">
             {recommendations.map((item, index) => (
               <li key={item}>
-                <span>{index + 1}</span>
+                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue/10 text-blue font-bold text-[12px] mr-3">{index + 1}</span>
                 {item}
               </li>
             ))}
           </ol>
         </ChartCard>
 
-        <Card className="export-card" variant="borderless">
-          <h3>Hesabat paketi</h3>
-          <Descriptions column={1} size="small">
-            <Descriptions.Item label="Format">Çox səhifəli React dashboard</Descriptions.Item>
-            <Descriptions.Item label="UI sistemi">Tailwind CSS + Ant Design tokenləri</Descriptions.Item>
-            <Descriptions.Item label="Qrafiklər">Recharts, interaktiv tooltip, filtrli dataset</Descriptions.Item>
-            <Descriptions.Item label="Mövzu">Rəqəmsal Biznes Analitikası və İdarəetmə Paneli</Descriptions.Item>
-          </Descriptions>
-        </Card>
       </div>
 
       <ChartCard title="Real resurs və məlumat xətti" subtitle="Dashboarddakı rəsmi və metodoloji mənbələr">

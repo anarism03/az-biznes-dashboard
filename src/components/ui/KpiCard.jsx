@@ -6,12 +6,15 @@ export function KpiCard({ label, value, unit, change, changeText, source, tone =
   const positive = change >= 0
 
   return (
-    <div className={`kpi-card tone-${tone}`}>
+    <div className={`kpi-card tone-${tone} group`}>
       <div className="kpi-glow" />
       <div className="kpi-row">
         <span>{label}</span>
-        <Tag color={positive ? 'success' : 'error'} className="kpi-tag">
-          {changeText ? null : positive ? <ArrowUpRight size={13} /> : <ArrowDownRight size={13} />}
+        <Tag
+          color={positive ? 'success' : 'error'}
+          className="kpi-tag !flex items-center gap-0.5"
+        >
+          {changeText ? null : positive ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
           {changeText || `${positive ? '+' : ''}${azNumber(change, 1)}%`}
         </Tag>
       </div>
@@ -20,10 +23,17 @@ export function KpiCard({ label, value, unit, change, changeText, source, tone =
         precision={1}
         suffix={unit}
         styles={{
-          content: { color: 'var(--text-primary)', fontWeight: 700, letterSpacing: '-0.02em' },
+          content: {
+            color: 'var(--text-primary)',
+            fontWeight: 700,
+            letterSpacing: '-0.03em',
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+          },
         }}
       />
-      <small>{source}</small>
+      <small className="mt-auto pt-3 block text-[11px] text-text-muted transition-colors duration-250">
+        {source}
+      </small>
     </div>
   )
 }

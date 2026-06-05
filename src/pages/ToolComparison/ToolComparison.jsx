@@ -9,8 +9,8 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { ChartCard } from '../components/ui/ChartCard.jsx'
-import { platformComparison } from '../data/dashboardData.js'
+import { ChartCard } from '../../components/ui/ChartCard.jsx'
+import { platformComparison } from '../../data/dashboardData.js'
 
 const columns = [
   { title: 'Platforma', dataIndex: 'tool', render: (value) => <strong>{value}</strong> },
@@ -22,7 +22,7 @@ const columns = [
   { title: 'Ən uyğun istifadə', dataIndex: 'bestFor' },
 ]
 
-export function ToolComparisonPage() {
+export function ToolComparison() {
   const scored = platformComparison.map((item) => ({
     ...item,
     total: Math.round((item.governance + item.modeling + item.integration + item.cost + item.custom) / 5),

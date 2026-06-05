@@ -12,11 +12,11 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { ChartCard } from '../components/ui/ChartCard.jsx'
-import { annualOfficialMacro } from '../data/dashboardData.js'
-import { azNumber } from '../utils/formatters.js'
+import { ChartCard } from '../../components/ui/ChartCard.jsx'
+import { annualOfficialMacro } from '../../data/dashboardData.js'
+import { azNumber } from '../../utils/formatters.js'
 
-export function EmpiricalStudyPage() {
+export function EmpiricalStudy() {
   const { selectedMacro } = useOutletContext()
   const fullYearRows = annualOfficialMacro.filter((item) => item.status === 'Tam il')
   const currentRows = annualOfficialMacro.filter((item) => item.status !== 'Tam il')

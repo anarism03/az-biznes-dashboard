@@ -1,9 +1,9 @@
 import { Card, Progress, Steps, Tag } from 'antd'
 import { CheckCircle2, ShieldCheck } from 'lucide-react'
-import { ChartCard } from '../components/ui/ChartCard.jsx'
-import { governanceLayers } from '../data/dashboardData.js'
+import { ChartCard } from '../../components/ui/ChartCard.jsx'
+import { governanceLayers } from '../../data/dashboardData.js'
 
-export function GovernancePage() {
+export function Governance() {
   return (
     <div className="page-stack">
 

@@ -20,14 +20,10 @@ function saveCache(data) {
   try {
     sessionStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }))
   } catch {
-    // sessionStorage dolubsa keç
   }
 }
 
-/**
- * World Bank API-dən Azərbaycanın iqtisadi göstəricilərini yükləyir.
- * 10 dəqiqəlik sessionStorage cache istifadə edir.
- */
+
 export function useWorldBankData() {
   const [wbData, setWbData]       = useState(null)
   const [wbLoading, setWbLoading] = useState(true)

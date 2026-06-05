@@ -156,23 +156,22 @@ export function DashboardShell() {
   }
 
   return (
-    <Layout className="min-h-screen bg-base text-text-primary transition-colors duration-250 overflow-x-hidden min-w-0">
+    <Layout hasSider={!isCompact} className="min-h-screen bg-base text-text-primary transition-colors duration-250">
       {!isCompact && (
-        <Sider width={292} collapsedWidth={86} collapsed={collapsed} className="border-r border-border bg-surface transition-all duration-300 !border-r-border !bg-surface sticky top-0 h-screen overflow-y-auto">
-          <Link to="/" className={`flex items-center ${collapsed ? 'justify-center px-0' : 'gap-3 px-4'} pt-5 pb-4 border-b border-border decoration-none transition-colors duration-250`} aria-label="Ana səhifə">
+        <Sider width={292} collapsedWidth={86} collapsed={collapsed} className="border-r border-border bg-surface !border-r-border !bg-surface sticky top-0 h-screen overflow-y-auto">
+          <Link to="/" className="flex items-center justify-center pt-5 pb-4 border-b border-border decoration-none transition-colors duration-250 overflow-hidden" aria-label="Ana səhifə">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0 shadow-md transition-shadow duration-250 bg-gradient-to-br from-[#00b5e2] via-[#e4002b] to-[#009b77]">
               <Flame size={22} />
             </div>
-            {!collapsed && (
-              <div>
-                <span className="block text-base font-extrabold text-text-primary leading-tight transition-colors duration-250">AzərDash</span>
-                <small className="block text-[11px] font-medium text-text-secondary leading-tight mt-0.5 transition-colors duration-250">Biznes Analitika</small>
-              </div>
-            )}
+            <div className={`overflow-hidden transition-all duration-[400ms] ease-[cubic-bezier(0.25,1,0.5,1)] whitespace-nowrap ${collapsed ? 'w-0 opacity-0 ml-0' : 'w-[140px] opacity-100 ml-3'}`}>
+              <span className="block text-base font-extrabold text-text-primary leading-tight transition-colors duration-250">AzərDash</span>
+              <small className="block text-[11px] font-medium text-text-secondary leading-tight mt-0.5 transition-colors duration-250">Biznes Analitika</small>
+            </div>
           </Link>
 
           <Menu
             mode="inline"
+            theme={theme === 'dark' ? 'dark' : 'light'}
             selectedKeys={[selectedKey]}
             items={menuItems}
             onClick={({ key }) => handleNavigate(key)}
@@ -183,7 +182,7 @@ export function DashboardShell() {
         </Sider>
       )}
 
-      <Layout className="overflow-x-hidden min-w-0">
+      <Layout className="min-w-0" style={{ transition: 'flex 0.4s cubic-bezier(0.25, 1, 0.5, 1), flex-basis 0.4s cubic-bezier(0.25, 1, 0.5, 1)' }}>
         <Header className="flex flex-col md:flex-row md:items-center justify-between px-0 md:px-6 py-3 md:py-0 gap-3 border-b border-border backdrop-blur-md sticky top-0 z-[100] bg-surface shadow-sm transition-all duration-250 h-auto min-h-[64px] !leading-normal !bg-surface/85 w-full max-w-full">
           <div className="flex items-center justify-between w-full md:w-auto px-4 md:px-0">
             <div className="flex items-center gap-2">
@@ -196,7 +195,7 @@ export function DashboardShell() {
               />
               <div>
                 <h2 className="text-[17px] font-bold text-text-primary m-0 transition-colors duration-250 line-clamp-1">{activeTitle}</h2>
-                {!isCompact && <p className="text-xs text-text-secondary m-0 transition-colors duration-250">Biznes datasının vizual analizi və qərar paneli</p>}
+                {!isCompact && <p className="text-xs text-text-secondary m-0 transition-colors duration-250">Biznes idarəetmə paneli</p>}
               </div>
             </div>
             
@@ -279,6 +278,7 @@ export function DashboardShell() {
       >
         <Menu
           mode="inline"
+          theme={theme === 'dark' ? 'dark' : 'light'}
           selectedKeys={[selectedKey]}
           items={menuItems}
           onClick={({ key }) => handleNavigate(key)}

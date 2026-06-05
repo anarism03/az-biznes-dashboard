@@ -16,154 +16,31 @@ import {
 } from 'recharts'
 import { App as AntApp, Badge, Button, Progress, Skeleton, Tag } from 'antd'
 import { ArrowUpRight, Download, Globe, RadioTower, RefreshCw, TrendingUp, TrendingDown } from 'lucide-react'
-import { ChartCard } from '../components/ui/ChartCard.jsx'
-import { KpiCard } from '../components/ui/KpiCard.jsx'
-import { SourceStrip } from '../components/ui/SourceStrip.jsx'
-import { annualOfficialMacro } from '../data/dashboardData.js'
-import { exportDashboardExcel } from '../utils/exportData.js'
-import { azNumber, sectorColor } from '../utils/formatters.js'
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-function fmt(val, dec = 1) {
-  if (val === null || val === undefined) return '—'
-  return azNumber(val, dec)
-}
-
-function usdBillion(val) {
-  if (!val) return '—'
-  return `${azNumber(val / 1e9, 2)} mlrd USD`
-}
-
-// Real məlumatlar üçün skeleton KPI card
-function ApiKpiCard({ label, value, unit, badge = 'Canlı', tone = 'teal', loading, positive = true, children }) {
-  return (
-    <div className={`kpi-card tone-${tone}`} style={{ minHeight: 160 }}>
-      <div className="kpi-glow" />
-      <div className="kpi-row">
-        <span>{label}</span>
-        <span style={{
-          display: 'inline-flex', alignItems: 'center', gap: 4,
-          padding: '2px 8px', borderRadius: 999,
-          background: 'rgba(20,184,166,0.12)',
-          border: '1px solid rgba(20,184,166,0.3)',
-          color: 'var(--teal)', fontSize: 11, fontWeight: 700,
-        }}>
-          <Globe size={10} /> {badge}
-        </span>
-      </div>
-      {loading ? (
-        <Skeleton active paragraph={{ rows: 1 }} title={{ width: '60%' }} style={{ marginTop: 8 }} />
-      ) : (
-        <div style={{ marginTop: 8 }}>
-          <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.1 }}>
-            {value}
-          </div>
-          {unit && (
-            <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 }}>{unit}</div>
-          )}
-          {children}
-        </div>
-      )}
-      <small style={{ marginTop: 12, display: 'block' }}>Dünya Bankı Open Data</small>
-    </div>
-  )
-}
-
-// ─── Custom Tooltip ───────────────────────────────────────────────────────────
-function DarkTooltip({ active, payload, label }) {
-  if (!active || !payload?.length) return null
-  return (
-    <div style={{
-      background: 'var(--bg-card)', border: '1px solid var(--border-md)',
-      borderRadius: 10, padding: '10px 14px', boxShadow: 'var(--shadow-md)',
-    }}>
-      <div style={{ color: 'var(--text-secondary)', fontSize: 12, marginBottom: 6, fontWeight: 600 }}>{label}</div>
-      {payload.map((p, i) => (
-        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 3 }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: p.color, flexShrink: 0 }} />
-          <span style={{ color: 'var(--text-secondary)', fontSize: 12 }}>{p.name}:</span>
-          <span style={{ color: 'var(--text-primary)', fontSize: 12, fontWeight: 600 }}>{p.value !== null ? azNumber(p.value, 1) : '—'}</span>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
-export function OverviewPage() {
+import { ChartCard } from '../../components/ui/ChartCard.jsx'
+import { KpiCard } from '../../components/ui/KpiCard.jsx'
+import { SourceStrip } from '../../components/ui/SourceStrip.jsx'
+import { annualOfficialMacro } from '../../data/dashboardData.js'
+import { exportDashboardExcel } from '../../utils/exportData.js'
+import { azNumber, sectorColor } from '../../utils/formatters.js'
+import { useOverview } from './useOverview.js'
+import { ApiKpiCard, DarkTooltip } from './components.jsx'
+import { fmt, usdBillion } from './utils.js'
+export function Overview() {
   const { message } = AntApp.useApp()
-  const filters = useOutletContext()
-  const { year, sector, sectors, selectedMacro, wbYear, wbLoading, wbError, wbTimeSeries, fetchedAt } = filters
-
-  const selectedIndicators = [
-    { name: 'ÜDM', value: selectedMacro.gdp },
-    { name: 'Qeyri-neft ÜDM', value: selectedMacro.nonOilGdp },
-    { name: 'Sənaye', value: selectedMacro.industry },
-    { name: 'Q/N sənaye', value: selectedMacro.nonOilIndustry },
-    { name: 'İnvestisiya', value: selectedMacro.investment },
-    { name: 'K/T', value: selectedMacro.agriculture },
-    selectedMacro.transportStorage ? { name: 'Nəqliyyat', value: selectedMacro.transportStorage } : null,
-    selectedMacro.ictServices ? { name: 'İKT', value: selectedMacro.ictServices } : null,
-    selectedMacro.retailTrade ? { name: 'Ticarət', value: selectedMacro.retailTrade } : null,
-  ].filter(Boolean)
-
-  const dskKpis = [
-    {
-      label: 'ÜDM (AZN)',
-      value: selectedMacro.gdp / 1000,
-      unit: 'mlrd AZN',
-      change: selectedMacro.growth,
-      source: selectedMacro.source,
-      tone: 'teal',
-    },
-    {
-      label: 'Qeyri-neft/qaz ÜDM',
-      value: selectedMacro.nonOilGdp / 1000,
-      unit: 'mlrd AZN',
-      change: selectedMacro.nonOilGrowth,
-      source: 'Dövlət Statistika Komitəsi',
-      tone: 'blue',
-    },
-    {
-      label: 'Sənaye məhsulu',
-      value: selectedMacro.industry / 1000,
-      unit: 'mlrd AZN',
-      change: 0,
-      changeText: selectedMacro.status,
-      source: 'Dövlət Statistika Komitəsi',
-      tone: 'amber',
-    },
-    {
-      label: 'Əsas kapital investisiya',
-      value: selectedMacro.investment / 1000,
-      unit: 'mlrd AZN',
-      change: 0,
-      changeText: selectedMacro.status,
-      source: 'Dövlət Statistika Komitəsi',
-      tone: 'rose',
-    },
-  ]
-
-  const downloadReport = () => {
-    exportDashboardExcel(filters)
-    message.success('Hesabat Excel formatında endirildi')
-  }
-
-  const scrollToPanel = () => {
-    document.getElementById('live-dashboard')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
+  const {
+    year, sectors, selectedMacro, wbYear, wbLoading, wbError, wbTimeSeries, fetchedAt, wbData,
+    selectedIndicators, dskKpis, downloadReport, scrollToPanel
+  } = useOverview(message)
 
   return (
     <div className="flex flex-col gap-6">
-      {/* ── Hero ─────────────────────────────────── */}
       <section className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-8 items-center rounded-[20px] p-6 md:p-9 relative overflow-hidden border border-border bg-card shadow-md transition-colors duration-250 before:content-[''] before:absolute before:-top-[60px] before:-right-[60px] before:w-[240px] before:h-[240px] before:rounded-full before:bg-[radial-gradient(circle,rgba(15,118,110,0.08)_0%,transparent_70%)] dark:before:bg-[radial-gradient(circle,rgba(20,184,166,0.10)_0%,transparent_70%)] before:pointer-events-none">
         <div className="flex flex-col gap-3.5">
           <span className="eyebrow">Azərbaycan biznes analitikası</span>
-          <h2>Data vizuallaşdırma qərarı daha tez və daha aydın izah etməyə kömək edir.</h2>
+          <h2>Biznes Analitikası üzrə Tədqiqat Paneli</h2>
           <p>
-            Dashboard dissertasiyada qurulan nəzəri xətti praktik nümunə kimi göstərir:
-            KPI, sektor payları, alət seçimi, empirik nəticə və data governance eyni paneldə izlənilir.
-            Qlobal iqtisadi göstəricilər Dünya Bankından (Canlı), ətraflı statistika isə Dövlət Statistika Komitəsindən əldə olunur.
+            Bu idarəetmə paneli makroiqtisadi göstəricilərin və sektor paylarının vizual təhlili üçün hazırlanmışdır.
+            Burada həm Dünya Bankının qlobal iqtisadi məlumatları, həm də Dövlət Statistika Komitəsinin rəsmi statistikası öz əksini tapıb.
           </p>
           <div className="flex gap-2.5 flex-wrap">
             <Button type="primary" icon={<RadioTower size={17} />} onClick={scrollToPanel}>Panelə keç</Button>
@@ -198,13 +75,11 @@ export function OverviewPage() {
         </div>
       </section>
 
-      {/* ── Data source strip ─────────────────────── */}
       <div className="flex items-center gap-2 py-2 px-4 rounded-xl bg-card border border-border text-xs text-text-secondary font-medium flex-wrap transition-colors duration-250">
         <Badge status={wbLoading ? 'processing' : wbError ? 'error' : 'success'}
                color={wbLoading ? '#f59e0b' : wbError ? '#f43f5e' : '#14b8a6'} />
         <span>Məlumat mənbələri:</span>
-        Dünya Bankı Qlobal Məlumat Binası (Canlı) ·
-        Dövlət Statistika Komitəsi (yerli, rəsmi)
+        Dünya Bankı Open Data · Dövlət Statistika Komitəsi
         {fetchedAt && !wbLoading && (
           <span style={{ marginLeft: 'auto', color: 'var(--text-muted)', fontSize: 11, display: 'flex', alignItems: 'center', gap: 4 }}>
             <RefreshCw size={10} /> {fetchedAt.toLocaleTimeString('az-AZ')}-də yeniləndi
@@ -213,86 +88,39 @@ export function OverviewPage() {
         {wbError && <span style={{ color: '#f43f5e', fontSize: 12 }}>Məlumat xətası: {wbError}</span>}
       </div>
 
-      {/* ── DSK KPI cards ─────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {dskKpis.map(item => (
           <KpiCard key={item.label} {...item} />
         ))}
       </div>
-
-      {/* ── World Bank API real göstəricilər ──────── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '4px 0' }}>
-        <div style={{ width: 3, height: 24, background: 'linear-gradient(135deg,#14b8a6,#0ea5e9)', borderRadius: 999 }} />
-        <h3 style={{ margin: 0, color: 'var(--text-primary)', fontSize: 15, fontWeight: 700 }}>
-          Dünya Bankı Qlobal Göstəricilər — Canlı Məlumatlar
-        </h3>
-        <span style={{
-          padding: '2px 10px', borderRadius: 999,
-          background: 'rgba(20,184,166,0.1)', border: '1px solid rgba(20,184,166,0.25)',
-          color: 'var(--teal)', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4,
-        }}>
-          <Globe size={10} /> {year} il üçün
-        </span>
+      <div className="flex items-center gap-2 mt-4 mb-2">
+        <div style={{ width: 3, height: 20, background: '#1677ff', borderRadius: 999 }} />
+        <h3 className="text-[15px] font-bold text-text-primary m-0">Dünya Bankı Göstəriciləri</h3>
       </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <ApiKpiCard label="ÜDM (ABŞ dolları)" loading={wbLoading} tone="teal">
+        <ApiKpiCard label="ÜDM (ABŞ dolları)" loading={wbLoading}>
           <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--text-primary)', marginTop: 4 }}>
             {wbYear ? usdBillion(wbYear.gdpUsd) : '—'}
           </div>
-          {wbYear?.gdpGrowth !== null && wbYear?.gdpGrowth !== undefined && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
-              {wbYear.gdpGrowth >= 0
-                ? <TrendingUp size={13} style={{ color: '#10b981' }} />
-                : <TrendingDown size={13} style={{ color: '#f43f5e' }} />}
-              <span style={{ fontSize: 12, color: wbYear.gdpGrowth >= 0 ? '#10b981' : '#f43f5e', fontWeight: 600 }}>
-                {wbYear.gdpGrowth >= 0 ? '+' : ''}{fmt(wbYear.gdpGrowth)}% artım
-              </span>
-            </div>
-          )}
         </ApiKpiCard>
-
-        <ApiKpiCard label="Adambaşına ÜDM" loading={wbLoading} tone="blue">
+        <ApiKpiCard label="Adambaşına ÜDM" loading={wbLoading}>
           <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--text-primary)', marginTop: 4 }}>
             {wbYear?.gdpPerCapita ? `${fmt(wbYear.gdpPerCapita, 0)} USD` : '—'}
           </div>
         </ApiKpiCard>
-
-        <ApiKpiCard label="İnflyasiya" loading={wbLoading} tone="amber">
+        <ApiKpiCard label="İnflyasiya" loading={wbLoading}>
           <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--text-primary)', marginTop: 4 }}>
             {wbYear?.inflation !== null && wbYear?.inflation !== undefined ? `${fmt(wbYear.inflation)}%` : '—'}
           </div>
           <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 }}>İstehlakçı qiymətləri</div>
         </ApiKpiCard>
-
-        <ApiKpiCard label="İşsizlik" loading={wbLoading} tone="rose">
+        <ApiKpiCard label="İşsizlik" loading={wbLoading}>
           <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--text-primary)', marginTop: 4 }}>
             {wbYear?.unemployment !== null && wbYear?.unemployment !== undefined ? `${fmt(wbYear.unemployment)}%` : '—'}
           </div>
           <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 }}>İşçi qüvvəsinin %-i</div>
         </ApiKpiCard>
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <ApiKpiCard label="İxrac (ÜDM-in %-i)" loading={wbLoading} tone="teal">
-          <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', marginTop: 4 }}>
-            {wbYear?.exports !== null && wbYear?.exports !== undefined ? `${fmt(wbYear.exports)}%` : '—'}
-          </div>
-        </ApiKpiCard>
-        <ApiKpiCard label="İdxal (ÜDM-in %-i)" loading={wbLoading} tone="blue">
-          <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', marginTop: 4 }}>
-            {wbYear?.imports !== null && wbYear?.imports !== undefined ? `${fmt(wbYear.imports)}%` : '—'}
-          </div>
-        </ApiKpiCard>
-        <ApiKpiCard label="Birbaşa Xarici İnvestisiya" loading={wbLoading} tone="violet" badge="BXİ · Canlı">
-          <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', marginTop: 4 }}>
-            {wbYear?.fdi !== null && wbYear?.fdi !== undefined ? `${fmt(wbYear.fdi)}%` : '—'}
-          </div>
-          <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 3 }}>ÜDM-in %-i</div>
-        </ApiKpiCard>
-      </div>
-
-      {/* ── Makro illik qrafik (DSK) ──────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4">
         <ChartCard
           id="live-dashboard"
@@ -340,12 +168,12 @@ export function OverviewPage() {
         </ChartCard>
       </div>
 
-      {/* ── World Bank time series qrafik ────────── */}
+
       {wbTimeSeries.length > 0 && (
         <ChartCard
           title="ÜDM dinamikası — Dünya Bankı"
           subtitle="İllik trend və proqnozlar"
-          extra={<Tag color="cyan" icon={<Globe size={11} />}>Canlı Data</Tag>}
+          extra={<Tag color="blue">Dünya Bankı</Tag>}
         >
           <ResponsiveContainer width="100%" height={300}>
             <ComposedChart data={wbTimeSeries} margin={{ top: 12, right: 16, left: 0, bottom: 0 }}>
@@ -377,10 +205,10 @@ export function OverviewPage() {
         </ChartCard>
       )}
 
-      {/* ── İxrac/idxal + İşsizlik ───────────────── */}
+
       {wbTimeSeries.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <ChartCard title="İxrac və İdxal dinamikası" subtitle="ÜDM-in %-i · Dünya Bankı" extra={<Tag color="cyan"><Globe size={10} /> Canlı Data</Tag>}>
+          <ChartCard title="İxrac və İdxal dinamikası" subtitle="ÜDM-in %-i · Dünya Bankı" extra={<Tag color="blue">Dünya Bankı</Tag>}>
             <ResponsiveContainer width="100%" height={260}>
               <AreaChart data={wbTimeSeries} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
                 <CartesianGrid stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" vertical={false} />
@@ -394,7 +222,7 @@ export function OverviewPage() {
             </ResponsiveContainer>
           </ChartCard>
 
-          <ChartCard title="İşsizlik nisbəti" subtitle="İşçi qüvvəsinin %-i · Dünya Bankı" extra={<Tag color="cyan"><Globe size={10} /> Canlı Data</Tag>}>
+          <ChartCard title="İşsizlik nisbəti" subtitle="İşçi qüvvəsinin %-i · Dünya Bankı" extra={<Tag color="blue">Dünya Bankı</Tag>}>
             <ResponsiveContainer width="100%" height={260}>
               <AreaChart data={wbTimeSeries} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
                 <CartesianGrid stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" vertical={false} />
@@ -408,7 +236,7 @@ export function OverviewPage() {
         </div>
       )}
 
-      {/* ── DSK dövrü göstəriciləri ───────────────── */}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <ChartCard title={`${selectedMacro.period} göstəriciləri`} subtitle="Dövlət Statistika Komitəsi · milyon AZN">
           <ResponsiveContainer width="100%" height={280}>

@@ -11,9 +11,9 @@ import {
   YAxis,
 } from 'recharts'
 import { Globe } from 'lucide-react'
-import { ChartCard } from '../components/ui/ChartCard.jsx'
-import { kpiRows } from '../data/dashboardData.js'
-import { azNumber, sectorColor } from '../utils/formatters.js'
+import { ChartCard } from '../../components/ui/ChartCard.jsx'
+import { kpiRows } from '../../data/dashboardData.js'
+import { azNumber, sectorColor } from '../../utils/formatters.js'
 
 const columns = [
   { title: 'Perspektiv', dataIndex: 'perspective', render: (value) => <Tag color="cyan">{value}</Tag> },
@@ -22,7 +22,7 @@ const columns = [
   { title: 'Qərar istifadəsi', dataIndex: 'decision' },
 ]
 
-export function KpiFrameworkPage() {
+export function KpiFramework() {
   const { sectors, selectedMacro, year, wbYear, wbLoading, wbTimeSeries } = useOutletContext()
   const indicatorRows = [
     { name: 'ÜDM', value: selectedMacro.gdp },
