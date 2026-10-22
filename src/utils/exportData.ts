@@ -7,9 +7,10 @@ import {
   officialSectorSharesByYear,
   platformComparison,
   sourceLinks,
-} from '../data/dashboardData.js'
+} from '../data/dashboardData'
+import type { DashboardFilters } from '../types/dashboard'
 
-function downloadFile(filename, mimeType, content) {
+function downloadFile(filename: string, mimeType: string, content: string) {
   const blob = new Blob([content], { type: mimeType })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
@@ -21,14 +22,14 @@ function downloadFile(filename, mimeType, content) {
   URL.revokeObjectURL(url)
 }
 
-function escapeCell(value) {
+function escapeCell(value: unknown) {
   return String(value ?? '')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
 }
 
-function tableToHtml(title, rows) {
+function tableToHtml(title: string, rows: Record<string, unknown>[]) {
   if (!rows.length) return `<h2>${escapeCell(title)}</h2><p>Data yoxdur</p>`
   const columns = Object.keys(rows[0])
   const header = columns.map((key) => `<th>${escapeCell(key)}</th>`).join('')
@@ -38,14 +39,16 @@ function tableToHtml(title, rows) {
   return `<h2>${escapeCell(title)}</h2><table border="1"><thead><tr>${header}</tr></thead><tbody>${body}</tbody></table>`
 }
 
-function toCsv(rows) {
+function toCsv(rows: Record<string, unknown>[]) {
   if (!rows.length) return ''
   const columns = Object.keys(rows[0])
-  const quote = (value) => `"${String(value ?? '').replace(/"/g, '""')}"`
+  const quote = (value: unknown) => `"${String(value ?? '').replace(/"/g, '""')}"`
   return [columns.map(quote).join(','), ...rows.map((row) => columns.map((key) => quote(row[key])).join(','))].join('\n')
 }
 
-export function buildDashboardExport(context) {
+type ExportContext = Pick<DashboardFilters, 'year' | 'sector' | 'sectors' | 'totals' | 'selectedMacro'>
+
+export function buildDashboardExport(context: ExportContext) {
   const { year, sector, sectors, totals, selectedMacro } = context
   const summary = [
     { göstərici: 'İl', dəyər: year },
@@ -73,10 +76,10 @@ export function buildDashboardExport(context) {
   }
 }
 
-export function exportDashboardExcel(context) {
+export function exportDashboardExcel(context: ExportContext) {
   const data = buildDashboardExport(context)
   const html = Object.entries(data)
-    .map(([title, rows]) => tableToHtml(title, Array.isArray(rows) ? rows : []))
+    .map(([title, rows]) => tableToHtml(title, (Array.isArray(rows) ? rows : []) as Record<string, unknown>[]))
     .join('<br/>')
 
   downloadFile(
@@ -86,17 +89,20 @@ export function exportDashboardExcel(context) {
   )
 }
 
-export function exportDashboardCsv(context) {
+export function exportDashboardCsv(context: ExportContext) {
   const data = buildDashboardExport(context)
-  const rows = [
+  const rows: Record<string, unknown>[] = [
     ...data.summary,
     ...annualOfficialMacro.map((item) => ({ bölmə: 'Rəsmi illik makro göstəricilər', ...item })),
-    ...(officialSectorSharesByYear[context.year] || []).map((item) => ({ bölmə: `${context.year} ÜDM sektor payları`, ...item })),
+    ...(officialSectorSharesByYear[context.year] || []).map((item) => ({
+      bölmə: `${context.year} ÜDM sektor payları`,
+      ...item,
+    })),
   ]
   downloadFile(`vizual-bi-dashboard-${context.year}.csv`, 'text/csv;charset=utf-8', `\ufeff${toCsv(rows)}`)
 }
 
-export function exportDashboardJson(context) {
+export function exportDashboardJson(context: ExportContext) {
   const data = buildDashboardExport(context)
   downloadFile(
     `vizual-bi-dashboard-${context.year}.json`,
@@ -105,7 +111,7 @@ export function exportDashboardJson(context) {
   )
 }
 
-export function copySummary(context) {
+export function copySummary(context: ExportContext) {
   const text = [
     `İl: ${context.year}`,
     `Sektor: ${context.sector}`,

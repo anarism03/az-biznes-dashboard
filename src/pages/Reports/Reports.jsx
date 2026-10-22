@@ -1,7 +1,7 @@
 import { Card, Descriptions, Table, Tag } from 'antd'
 import { ExternalLink } from 'lucide-react'
-import { ChartCard } from '../../components/ui/ChartCard.jsx'
-import { chapterMap, recommendations, sourceLinks } from '../../data/dashboardData.js'
+import { ChartCard } from '../../components/ui/ChartCard'
+import { chapterMap, recommendations, sourceLinks } from '../../data/dashboardData'
 
 const sourceColumns = [
   {

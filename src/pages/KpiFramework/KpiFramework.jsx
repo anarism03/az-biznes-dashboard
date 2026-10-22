@@ -11,9 +11,9 @@ import {
   YAxis,
 } from 'recharts'
 import { Globe } from 'lucide-react'
-import { ChartCard } from '../../components/ui/ChartCard.jsx'
-import { kpiRows } from '../../data/dashboardData.js'
-import { azNumber, sectorColor } from '../../utils/formatters.js'
+import { ChartCard } from '../../components/ui/ChartCard'
+import { kpiRows } from '../../data/dashboardData'
+import { azNumber, sectorColor } from '../../utils/formatters'
 
 const columns = [
   { title: 'Perspektiv', dataIndex: 'perspective', render: (value) => <Tag color="cyan">{value}</Tag> },

@@ -12,9 +12,9 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { ChartCard } from '../../components/ui/ChartCard.jsx'
-import { annualOfficialMacro } from '../../data/dashboardData.js'
-import { azNumber } from '../../utils/formatters.js'
+import { ChartCard } from '../../components/ui/ChartCard'
+import { annualOfficialMacro } from '../../data/dashboardData'
+import { azNumber } from '../../utils/formatters'
 
 export function EmpiricalStudy() {
   const { selectedMacro } = useOutletContext()

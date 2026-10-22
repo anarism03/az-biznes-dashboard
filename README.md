@@ -1,66 +1,48 @@
-# Azərbaycan Biznes Dashboard
+# AzərDash — Azərbaycan Biznes Dashboard
 
-Bu layihə mənim dissertasiya mövzum üçün hazırlanmış biznes data vizuallaşdırma panelidir. Məqsəd sadədir: rəsmi iqtisadi göstəriciləri daha oxunaqlı formada göstərmək və qərarvermə üçün istifadə oluna bilən dashboard nümunəsi qurmaq.
+Anar Ismayılzadənin dissertasiya mövzusu üçün praktiki nümunə: **biznesdə qərarverməni optimallaşdırmaq üçün qabaqcıl data vizuallaşdırma və interaktiv dashboard analizi**.
 
-Layihədə 2021, 2022, 2023, 2024, 2025 və 2026 göstəriciləri var. 2026 məlumatı tam il deyil, yanvar-aprel dövrü kimi ayrıca göstərilir.
+Panel 2021–2026 rəsmi makro göstəriciləri və Dünya Bankı Open Data API-sini birləşdirir. 2026 məlumatı tam il deyil — yanvar–aprel dövrü kimi ayrıca göstərilir.
 
 ## Nələr var
 
-- İllərə görə ÜDM və qeyri-neft/qaz göstəriciləri
-- KPI kartları və qrafiklər
-- Sektor payları
-- BI alətlərinin müqayisəsi
-- Empirik analiz bölməsi
-- Data governance səhifəsi
-- Hesabat və mənbələr bölməsi
-- Axtarış
-- Excel, CSV və JSON export
-- Mobil və tablet üçün uyğun görünüş
+- Linked KPI paneli (il/sektor filtrləri bütün qrafikləri sinxron yeniləyir)
+- Qrafik kliklə il seçimi və sektor **drill-down** detalı
+- KPI kartları, boş/yüklənmə vəziyyətləri
+- Sektor payları, BI alət müqayisəsi, empirik analiz, data governance
+- Axtarış, Excel/CSV/JSON export
+- Light/dark tema, mobil və tablet uyğunluğu
+- TypeScript (core) + React 18 + Vite
 
-## İstifadə olunan texnologiyalar
+## Texnologiyalar
 
-- React
+- React 18 + TypeScript
 - Vite
 - Ant Design
 - Recharts
 - React Router
 - Tailwind CSS
 
-## Layihəni işə salmaq
-
-Əvvəl paketləri quraşdır:
+## İşə salmaq
 
 ```bash
 npm install
-```
-
-Sonra lokal serveri başlat:
-
-```bash
 npm run dev
 ```
 
-Brauzerdə bu ünvana keç:
+Brauzer: `http://localhost:5173`
 
-```text
-http://localhost:5173
-```
-
-## Build
+## Build / typecheck
 
 ```bash
+npm run typecheck
 npm run build
+npm run preview
 ```
 
 ## Mənbələr
 
-Dashboard əsasən rəsmi açıq mənbələrdəki məlumatlara əsaslanır:
-
 - Dövlət Statistika Komitəsi
 - İqtisadiyyat Nazirliyi
 - Rəqəmsal iqtisadiyyat strategiyası
-- World Bank Azerbaijan Monthly Economic Update
-
-## Qeyd
-
-Bu layihə həm dissertasiya üçün praktiki nümunədir, həm də real dashboard kimi istifadə oluna bilər.
+- World Bank Azerbaijan Open Data / Monthly Economic Update

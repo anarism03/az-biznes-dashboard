@@ -5,7 +5,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'sans-serif'],
+        sans: ['DM Sans', 'Segoe UI', 'sans-serif'],
+        display: ['Syne', 'DM Sans', 'sans-serif'],
       },
       colors: {
         base: 'var(--bg-base)',

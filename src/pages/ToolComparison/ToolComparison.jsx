@@ -9,8 +9,8 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { ChartCard } from '../../components/ui/ChartCard.jsx'
-import { platformComparison } from '../../data/dashboardData.js'
+import { ChartCard } from '../../components/ui/ChartCard'
+import { platformComparison } from '../../data/dashboardData'
 
 const columns = [
   { title: 'Platforma', dataIndex: 'tool', render: (value) => <strong>{value}</strong> },
