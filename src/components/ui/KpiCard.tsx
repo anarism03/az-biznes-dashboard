@@ -43,7 +43,7 @@ export function KpiCard({
               color: 'var(--text-primary)',
               fontWeight: 700,
               letterSpacing: '-0.03em',
-              fontFamily: "'Syne', 'DM Sans', sans-serif",
+              fontFamily: "'IBM Plex Sans', 'Noto Sans', 'Segoe UI', sans-serif",
             },
           }}
         />

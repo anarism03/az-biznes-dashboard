@@ -5,8 +5,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['DM Sans', 'Segoe UI', 'sans-serif'],
-        display: ['Syne', 'DM Sans', 'sans-serif'],
+        sans: ['IBM Plex Sans', 'Noto Sans', 'Segoe UI', 'sans-serif'],
+        display: ['IBM Plex Sans', 'Noto Sans', 'Segoe UI', 'sans-serif'],
       },
       colors: {
         base: 'var(--bg-base)',

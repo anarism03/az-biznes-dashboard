@@ -14,7 +14,7 @@ export function useAppTheme() {
       colorWarning: isDark ? '#fbbf24' : '#b45309',
       colorError: isDark ? '#ff4d6a' : '#e4002b',
       borderRadius: 8,
-      fontFamily: "'DM Sans', 'Segoe UI', sans-serif",
+      fontFamily: "'IBM Plex Sans', 'Noto Sans', 'Segoe UI', sans-serif",
       colorBgBase: isDark ? '#0b1220' : '#f5f7fa',
       colorTextBase: isDark ? '#e8eef6' : '#0f172a',
       colorBgContainer: isDark ? '#151e2e' : '#ffffff',
