@@ -1,32 +1,30 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { App as AntApp, Badge, Button, Drawer, Dropdown, Input, Layout, Menu, Modal, Select, Segmented } from 'antd'
+import { App as AntApp, Button, Drawer, Dropdown, Input, Layout, Menu, Modal, Select, Segmented } from 'antd'
 import {
   BarChart3,
-  BookOpenCheck,
   BrainCircuit,
   DatabaseZap,
   Download,
   FileText,
   Gauge,
+  Info,
+  Moon,
   Network,
   PanelLeftClose,
   PanelLeftOpen,
   Search,
   Sun,
-  Moon,
-  Flame,
-  Info,
 } from 'lucide-react'
-import { chapterMap, sectors, sourceLinks, years } from '../../data/dashboardData.js'
-import { useDashboardFilters } from '../../hooks/useDashboardFilters.js'
-import { useTheme } from '../../contexts/ThemeContext.jsx'
+import { chapterMap, sectors, sourceLinks, years } from '../../data/dashboardData'
+import { useDashboardFilters } from '../../hooks/useDashboardFilters'
+import { useTheme } from '../../contexts/ThemeContext'
 import {
   copySummary,
   exportDashboardCsv,
   exportDashboardExcel,
   exportDashboardJson,
-} from '../../utils/exportData.js'
+} from '../../utils/exportData'
 
 const { Header, Sider, Content, Footer } = Layout
 
@@ -40,8 +38,10 @@ const navigation = [
   { key: '/about', label: 'Haqqımızda', icon: <Info size={18} /> },
 ]
 
-function useMediaQuery(query) {
-  const [matches, setMatches] = useState(() => window.matchMedia(query).matches)
+function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia(query).matches : false,
+  )
 
   useEffect(() => {
     const media = window.matchMedia(query)
@@ -78,7 +78,7 @@ export function DashboardShell() {
   const activeTitle = navigation.find((item) => item.key === selectedKey)?.label || 'İcra paneli'
 
   const searchIndex = useMemo(() => {
-    const pageDescriptions = {
+    const pageDescriptions: Record<string, string> = {
       '/': 'Əsas icra və performans paneli',
       '/kpi-framework': 'Biznes modelləri və KPI arxitekturası',
       '/tools': 'Müxtəlif analitik platformaların texniki müqayisəsi',
@@ -114,12 +114,12 @@ export function DashboardShell() {
       .slice(0, 8)
   }, [query, searchIndex])
 
-  const handleNavigate = (key) => {
+  const handleNavigate = (key: string) => {
     navigate(key)
     setMobileNavOpen(false)
   }
 
-  const handleExport = async (type) => {
+  const handleExport = async (type: string) => {
     if (type === 'excel') {
       exportDashboardExcel(filters)
       message.success('Excel faylı endirildi')
@@ -149,23 +149,40 @@ export function DashboardShell() {
       { key: 'excel', label: 'Excel (.xls)' },
       { key: 'csv', label: 'CSV' },
       { key: 'json', label: 'JSON' },
-      { type: 'divider' },
+      { type: 'divider' as const },
       { key: 'copy', label: 'Qısa nəticəni kopyala' },
     ],
-    onClick: ({ key }) => handleExport(key),
+    onClick: ({ key }: { key: string }) => handleExport(key),
   }
 
   return (
     <Layout hasSider={!isCompact} className="min-h-screen bg-base text-text-primary transition-colors duration-250">
       {!isCompact && (
-        <Sider width={292} collapsedWidth={86} collapsed={collapsed} className="border-r border-border bg-surface !border-r-border !bg-surface sticky top-0 h-screen overflow-y-auto">
-          <Link to="/" className="flex items-center justify-center pt-5 pb-4 border-b border-border decoration-none transition-colors duration-250 overflow-hidden" aria-label="Ana səhifə">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0 shadow-md transition-shadow duration-250 bg-gradient-to-br from-[#00b5e2] via-[#e4002b] to-[#009b77]">
-              <Flame size={22} />
+        <Sider
+          width={292}
+          collapsedWidth={86}
+          collapsed={collapsed}
+          className="border-r border-border bg-surface !border-r-border !bg-surface sticky top-0 h-screen overflow-y-auto"
+        >
+          <Link
+            to="/"
+            className="flex items-center justify-center pt-5 pb-4 border-b border-border decoration-none transition-colors duration-250 overflow-hidden"
+            aria-label="Ana səhifə"
+          >
+            <div className="brand-badge" aria-hidden>
+              <span /><span /><span />
             </div>
-            <div className={`overflow-hidden transition-all duration-[400ms] ease-[cubic-bezier(0.25,1,0.5,1)] whitespace-nowrap ${collapsed ? 'w-0 opacity-0 ml-0' : 'w-[140px] opacity-100 ml-3'}`}>
-              <span className="block text-base font-extrabold text-text-primary leading-tight transition-colors duration-250">AzərDash</span>
-              <small className="block text-[11px] font-medium text-text-secondary leading-tight mt-0.5 transition-colors duration-250">Biznes Analitika</small>
+            <div
+              className={`overflow-hidden transition-all duration-[400ms] ease-[cubic-bezier(0.25,1,0.5,1)] whitespace-nowrap ${
+                collapsed ? 'w-0 opacity-0 ml-0' : 'w-[150px] opacity-100 ml-3'
+              }`}
+            >
+              <span className="block text-base font-extrabold text-text-primary leading-tight font-display">
+                AzərDash
+              </span>
+              <small className="block text-[11px] font-medium text-text-secondary leading-tight mt-0.5">
+                Biznes Analitika
+              </small>
             </div>
           </Link>
 
@@ -174,15 +191,13 @@ export function DashboardShell() {
             theme={theme === 'dark' ? 'dark' : 'light'}
             selectedKeys={[selectedKey]}
             items={menuItems}
-            onClick={({ key }) => handleNavigate(key)}
+            onClick={({ key }) => handleNavigate(String(key))}
             className="border-none bg-transparent px-2 mt-2"
           />
-
-          
         </Sider>
       )}
 
-      <Layout className="min-w-0" style={{ transition: 'flex 0.4s cubic-bezier(0.25, 1, 0.5, 1), flex-basis 0.4s cubic-bezier(0.25, 1, 0.5, 1)' }}>
+      <Layout className="min-w-0">
         <Header className="flex flex-col md:flex-row md:items-center justify-between px-0 md:px-6 py-3 md:py-0 gap-3 border-b border-border backdrop-blur-md sticky top-0 z-[100] bg-surface shadow-sm transition-all duration-250 h-auto min-h-[64px] !leading-normal !bg-surface/85 w-full max-w-full">
           <div className="flex items-center justify-between w-full md:w-auto px-4 md:px-0">
             <div className="flex items-center gap-2">
@@ -194,17 +209,31 @@ export function DashboardShell() {
                 className="text-text-primary flex items-center justify-center hover:bg-hover !text-text-primary !px-2 !-ml-2"
               />
               <div>
-                <h2 className="text-[17px] font-bold text-text-primary m-0 transition-colors duration-250 line-clamp-1">{activeTitle}</h2>
-                {!isCompact && <p className="text-xs text-text-secondary m-0 transition-colors duration-250">Biznes idarəetmə paneli</p>}
+                <h2 className="text-[17px] font-bold text-text-primary m-0 font-display line-clamp-1">
+                  {activeTitle}
+                </h2>
+                {!isCompact && (
+                  <p className="text-xs text-text-secondary m-0">Biznes idarəetmə paneli</p>
+                )}
               </div>
             </div>
-            
+
             {isCompact && (
               <div className="flex items-center gap-1">
-                <Button type="text" icon={theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />} onClick={toggleTheme} className="!text-text-secondary hover:!text-teal" />
-                <Button type="text" icon={<Search size={18} />} onClick={() => setSearchOpen(true)} className="!text-text-secondary hover:!text-teal" />
+                <Button
+                  type="text"
+                  icon={theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+                  onClick={toggleTheme}
+                  className="!text-text-secondary hover:!text-az-blue"
+                />
+                <Button
+                  type="text"
+                  icon={<Search size={18} />}
+                  onClick={() => setSearchOpen(true)}
+                  className="!text-text-secondary hover:!text-az-blue"
+                />
                 <Dropdown menu={exportMenu} trigger={['click']}>
-                  <Button type="text" icon={<Download size={18} />} className="!text-text-secondary hover:!text-teal" />
+                  <Button type="text" icon={<Download size={18} />} className="!text-text-secondary hover:!text-az-blue" />
                 </Dropdown>
               </div>
             )}
@@ -213,20 +242,27 @@ export function DashboardShell() {
           <div className={`flex items-center gap-3 ${isCompact ? 'w-full overflow-x-auto no-scrollbar px-4 pb-1' : ''}`}>
             {!isCompact && (
               <div className="flex items-center gap-2 mr-2">
-                <button className="flex items-center justify-center w-9 h-9 rounded-lg border border-border-md bg-card text-text-secondary cursor-pointer transition-all duration-200 hover:bg-hover hover:text-teal hover:border-teal" onClick={toggleTheme} aria-label="Temanı dəyiş">
+                <button
+                  className="flex items-center justify-center w-9 h-9 rounded-lg border border-border-md bg-card text-text-secondary cursor-pointer transition-colors duration-200 hover:bg-hover hover:text-az-blue hover:border-az-blue"
+                  onClick={toggleTheme}
+                  aria-label="Temanı dəyiş"
+                  type="button"
+                >
                   {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
                 </button>
-                <Button icon={<Search size={17} />} onClick={() => setSearchOpen(true)}>Axtarış</Button>
+                <Button icon={<Search size={17} />} onClick={() => setSearchOpen(true)}>
+                  Axtarış
+                </Button>
                 <Dropdown menu={exportMenu} trigger={['click']}>
                   <Button icon={<Download size={17} />}>Yüklə</Button>
                 </Dropdown>
               </div>
             )}
-            
+
             <Segmented
               value={filters.year}
-              onChange={filters.setYear}
-              options={years}
+              onChange={(value) => filters.setYear(String(value))}
+              options={[...years]}
               className="year-switch shrink-0"
               size={isCompact ? 'small' : 'middle'}
             />
@@ -248,14 +284,30 @@ export function DashboardShell() {
         <Footer className="text-center bg-surface border-t border-border px-6 py-6 transition-colors duration-250">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 max-w-[1440px] mx-auto text-sm text-text-secondary">
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-text-primary">AzərDash</span> © {new Date().getFullYear()}
+              <span className="font-semibold text-text-primary font-display">AzərDash</span> ©{' '}
+              {new Date().getFullYear()}
             </div>
             <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
-              <Link to="/about" className="hover:text-teal transition-colors">Haqqımızda</Link>
-              <Link to="/reports" className="hover:text-teal transition-colors">Hesabat və mənbələr</Link>
-              <a href="mailto:ismayilzadeanar310@gmail.com" className="hover:text-teal transition-colors">ismayilzadeanar310@gmail.com</a>
-              <a href="tel:+994504496536" className="hover:text-teal transition-colors">+994 50 449 65 36</a>
-              <a href="https://linkedin.com/in/anarismayilzada" target="_blank" rel="noreferrer" className="hover:text-teal transition-colors">LinkedIn</a>
+              <Link to="/about" className="hover:text-az-blue transition-colors">
+                Haqqımızda
+              </Link>
+              <Link to="/reports" className="hover:text-az-blue transition-colors">
+                Hesabat və mənbələr
+              </Link>
+              <a href="mailto:ismayilzadeanar310@gmail.com" className="hover:text-az-blue transition-colors">
+                ismayilzadeanar310@gmail.com
+              </a>
+              <a href="tel:+994504496536" className="hover:text-az-blue transition-colors">
+                +994 50 449 65 36
+              </a>
+              <a
+                href="https://linkedin.com/in/anarismayilzada"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-az-blue transition-colors"
+              >
+                LinkedIn
+              </a>
             </div>
           </div>
         </Footer>
@@ -264,10 +316,10 @@ export function DashboardShell() {
       <Drawer
         title={
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white shrink-0 shadow-md bg-gradient-to-br from-[#00b5e2] via-[#e4002b] to-[#009b77]">
-              <Flame size={18} />
+            <div className="brand-badge brand-badge--sm" aria-hidden>
+              <span /><span /><span />
             </div>
-            <span className="text-base font-extrabold text-text-primary">AzərDash</span>
+            <span className="text-base font-extrabold text-text-primary font-display">AzərDash</span>
           </div>
         }
         placement="left"
@@ -281,17 +333,11 @@ export function DashboardShell() {
           theme={theme === 'dark' ? 'dark' : 'light'}
           selectedKeys={[selectedKey]}
           items={menuItems}
-          onClick={({ key }) => handleNavigate(key)}
+          onClick={({ key }) => handleNavigate(String(key))}
         />
       </Drawer>
 
-      <Modal
-        title="Dashboard axtarışı"
-        open={searchOpen}
-        onCancel={() => setSearchOpen(false)}
-        footer={null}
-        width={680}
-      >
+      <Modal title="Dashboard axtarışı" open={searchOpen} onCancel={() => setSearchOpen(false)} footer={null} width={680}>
         <Input
           size="large"
           value={query}
@@ -306,14 +352,16 @@ export function DashboardShell() {
               <button
                 key={`${item.route}-${item.title}`}
                 type="button"
-                className="w-full text-left p-3 mb-2 rounded-xl border border-border bg-base hover:bg-hover hover:border-teal transition-all duration-200 cursor-pointer flex flex-col group"
+                className="w-full text-left p-3 mb-2 rounded-lg border border-border bg-base hover:bg-hover hover:border-az-blue transition-colors duration-200 cursor-pointer flex flex-col group"
                 onClick={() => {
                   navigate(item.route)
                   setSearchOpen(false)
                   setQuery('')
                 }}
               >
-                <strong className="text-sm text-text-primary group-hover:text-teal transition-colors block">{item.title}</strong>
+                <strong className="text-sm text-text-primary group-hover:text-az-blue transition-colors block">
+                  {item.title}
+                </strong>
                 <span className="text-xs text-text-secondary mt-1 block">{item.text}</span>
               </button>
             ))

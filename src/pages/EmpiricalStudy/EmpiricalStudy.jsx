@@ -12,9 +12,9 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { ChartCard } from '../../components/ui/ChartCard.jsx'
-import { annualOfficialMacro } from '../../data/dashboardData.js'
-import { azNumber } from '../../utils/formatters.js'
+import { ChartCard } from '../../components/ui/ChartCard'
+import { annualOfficialMacro } from '../../data/dashboardData'
+import { azNumber } from '../../utils/formatters'
 
 export function EmpiricalStudy() {
   const { selectedMacro } = useOutletContext()
@@ -71,8 +71,8 @@ export function EmpiricalStudy() {
               <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `${azNumber(value / 1000, 0)} mlrd`} tick={{ fill: '#64748b' }} />
               <Tooltip formatter={(value) => `${azNumber(value, 1)} mln AZN`} />
               <Legend />
-              <Area type="monotone" dataKey="gdp" name="ÜDM" stroke="#14b8a6" fill="#14b8a6" fillOpacity={0.12} />
-              <Area type="monotone" dataKey="nonOilGdp" name="Qeyri-neft/qaz ÜDM" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.1} />
+              <Area type="monotone" dataKey="gdp" name="ÜDM" stroke="var(--az-blue)" fill="var(--az-blue)" fillOpacity={0.14} />
+              <Area type="monotone" dataKey="nonOilGdp" name="Qeyri-neft/qaz ÜDM" stroke="var(--az-green)" fill="var(--az-green)" fillOpacity={0.12} />
             </AreaChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -85,8 +85,8 @@ export function EmpiricalStudy() {
               <YAxis tickLine={false} axisLine={false} tick={{ fill: '#64748b' }} />
               <Tooltip formatter={(value) => `${azNumber(value, 1)}%`} />
               <Legend />
-              <Bar dataKey="growth" name="ÜDM artımı" fill="#14b8a6" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="nonOilGrowth" name="Qeyri-neft/qaz artımı" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="growth" name="ÜDM artımı" fill="var(--az-blue)" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="nonOilGrowth" name="Qeyri-neft/qaz artımı" fill="var(--az-green)" radius={[2, 2, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -114,8 +114,8 @@ export function EmpiricalStudy() {
               <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `${azNumber(value / 1000, 0)} mlrd`} />
               <Tooltip formatter={(value) => `${azNumber(value, 1)} mln AZN`} />
               <Legend />
-              <Bar dataKey="gdp" name="ÜDM" fill="#0f766e" radius={[6, 6, 0, 0]} />
-              <Bar dataKey="nonOilGdp" name="Qeyri-neft/qaz ÜDM" fill="#2563eb" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="gdp" name="ÜDM" fill="var(--az-blue)" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="nonOilGdp" name="Qeyri-neft/qaz ÜDM" fill="var(--az-green)" radius={[2, 2, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>

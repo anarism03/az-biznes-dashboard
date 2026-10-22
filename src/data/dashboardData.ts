@@ -1,4 +1,14 @@
-export const years = ['2021', '2022', '2023', '2024', '2025', '2026']
+import type {
+  ChapterItem,
+  EmpiricalRow,
+  KpiFrameworkRow,
+  MacroRow,
+  PlatformRow,
+  SectorShare,
+  SourceLink,
+} from '../types/dashboard'
+
+export const years = ['2021', '2022', '2023', '2024', '2025', '2026'] as const
 
 export const sectors = [
   'Hamısı',
@@ -12,7 +22,7 @@ export const sectors = [
   'Digər sahələr',
 ]
 
-export const annualOfficialMacro = [
+export const annualOfficialMacro: MacroRow[] = [
   {
     year: '2021',
     period: 'Yanvar-dekabr 2021',
@@ -129,7 +139,7 @@ export const annualOfficialMacro = [
   },
 ]
 
-export const officialSectorSharesByYear = {
+export const officialSectorSharesByYear: Record<string, SectorShare[]> = {
   2024: [
     { sector: 'Sənaye', share: 35.9 },
     { sector: 'Ticarət və nəqliyyat vasitələrinin təmiri', share: 10.7 },
@@ -165,7 +175,7 @@ export const officialSectorSharesByYear = {
   ],
 }
 
-export const platformComparison = [
+export const platformComparison: PlatformRow[] = [
   {
     key: 'power-bi',
     tool: 'Power BI',
@@ -218,7 +228,7 @@ export const platformComparison = [
   },
 ]
 
-export const empiricalImpact = [
+export const empiricalImpact: EmpiricalRow[] = [
   { metric: 'Qərar sürəti', before: 51, after: 78, delta: 27 },
   { metric: 'KPI anlaşılırlığı', before: 47, after: 81, delta: 34 },
   { metric: 'Hesabat xətaları', before: 39, after: 16, delta: -23 },
@@ -233,7 +243,7 @@ export const adoptionTrend = [
   { year: '2024', static: 39, interactive: 49, predictive: 23 },
 ]
 
-export const kpiRows = [
+export const kpiRows: KpiFrameworkRow[] = [
   {
     key: 'financial',
     perspective: 'Maliyyə',
@@ -272,7 +282,7 @@ export const governanceLayers = [
   { layer: 'Qərar dövrü', status: 76, text: 'Tövsiyə, icra sahibi, nəticə ölçümü və geribildirim' },
 ]
 
-export const chapterMap = [
+export const chapterMap: ChapterItem[] = [
   {
     title: 'Modul I',
     subtitle: 'Strateji Analitika Mərkəzi',
@@ -297,7 +307,7 @@ export const recommendations = [
   'Hər vizual nəticə qərar sahibi, vaxt pəncərəsi və ölçülən biznes nəticəsi ilə əlaqələndirilməlidir.',
 ]
 
-export const sourceLinks = [
+export const sourceLinks: SourceLink[] = [
   {
     name: 'Dövlət Statistika Komitəsi',
     detail: '2024-cü ildə ÜDM 126.3 mlrd manat, real artım 4.1%, qeyri-neft/qaz artımı 6.2%.',

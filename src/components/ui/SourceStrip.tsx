@@ -1,5 +1,5 @@
 import { Tag } from 'antd'
-import { sourceLinks } from '../../data/dashboardData.js'
+import { sourceLinks } from '../../data/dashboardData'
 
 export function SourceStrip() {
   return (

@@ -5,7 +5,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'sans-serif'],
+        sans: ['DM Sans', 'Segoe UI', 'sans-serif'],
+        display: ['Syne', 'DM Sans', 'sans-serif'],
       },
       colors: {
         base: 'var(--bg-base)',
@@ -15,6 +16,9 @@ export default {
         border: 'var(--border)',
         'border-md': 'var(--border-md)',
         'border-strong': 'var(--border-strong)',
+        'az-blue': 'var(--az-blue)',
+        'az-red': 'var(--az-red)',
+        'az-green': 'var(--az-green)',
         teal: 'var(--teal)',
         'teal-d': 'var(--teal-d)',
         cyan: 'var(--cyan)',
@@ -30,21 +34,9 @@ export default {
       boxShadow: {
         sm: 'var(--shadow-sm)',
         md: 'var(--shadow-md)',
-        'glow-teal': 'var(--shadow-glow-teal)',
-        'glow-cyan': 'var(--shadow-glow-cyan)',
-        'glow-violet': 'var(--shadow-glow-violet)',
       },
       transitionDuration: {
-        '250': '250ms',
-      },
-      animation: {
-        'pulse-dot': 'pulse-dot 2s ease-in-out infinite',
-      },
-      keyframes: {
-        'pulse-dot': {
-          '0%, 100%': { opacity: '1', transform: 'scale(1)' },
-          '50%': { opacity: '0.5', transform: 'scale(0.8)' },
-        },
+        250: '250ms',
       },
     },
   },

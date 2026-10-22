@@ -1,7 +1,7 @@
 import { Card, Progress, Steps, Tag } from 'antd'
 import { CheckCircle2, ShieldCheck } from 'lucide-react'
-import { ChartCard } from '../../components/ui/ChartCard.jsx'
-import { governanceLayers } from '../../data/dashboardData.js'
+import { ChartCard } from '../../components/ui/ChartCard'
+import { governanceLayers } from '../../data/dashboardData'
 
 export function Governance() {
   return (
@@ -14,7 +14,7 @@ export function Governance() {
               <div className="node-index">{index + 1}</div>
               <h3>{item.layer}</h3>
               <p>{item.text}</p>
-              <Progress percent={item.status} strokeColor={item.status > 85 ? '#0f766e' : '#f59e0b'} />
+              <Progress percent={item.status} strokeColor={item.status > 85 ? 'var(--az-green)' : 'var(--az-red)'} />
             </div>
           ))}
         </div>
