@@ -85,7 +85,7 @@
 
   body {
     @apply min-h-screen bg-base text-text-primary antialiased transition-colors duration-250;
-    font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    font-family: 'IBM Plex Sans', 'Noto Sans', 'Segoe UI', sans-serif;
     overflow-x: hidden;
     background-color: var(--bg-base);
   }
@@ -94,8 +94,8 @@
   h2,
   h3,
   .font-display {
-    font-family: 'Syne', 'DM Sans', sans-serif;
-    letter-spacing: -0.02em;
+    font-family: 'IBM Plex Sans', 'Noto Sans', 'Segoe UI', sans-serif;
+    letter-spacing: -0.01em;
   }
 
   ::-webkit-scrollbar {
