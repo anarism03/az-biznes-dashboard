@@ -16,6 +16,7 @@ import {
   Search,
   Sun,
 } from 'lucide-react'
+import { BrandLogo } from '../brand/BrandLogo'
 import { chapterMap, sectors, sourceLinks, years } from '../../data/dashboardData'
 import { useDashboardFilters } from '../../hooks/useDashboardFilters'
 import { useTheme } from '../../contexts/ThemeContext'
@@ -169,9 +170,7 @@ export function DashboardShell() {
             className="flex items-center justify-center pt-5 pb-4 border-b border-border decoration-none transition-colors duration-250 overflow-hidden"
             aria-label="Ana səhifə"
           >
-            <div className="brand-badge" aria-hidden>
-              <span /><span /><span />
-            </div>
+            <BrandLogo size={40} title="AzərDash" />
             <div
               className={`overflow-hidden transition-all duration-[400ms] ease-[cubic-bezier(0.25,1,0.5,1)] whitespace-nowrap ${
                 collapsed ? 'w-0 opacity-0 ml-0' : 'w-[150px] opacity-100 ml-3'
@@ -316,9 +315,7 @@ export function DashboardShell() {
       <Drawer
         title={
           <div className="flex items-center gap-3">
-            <div className="brand-badge brand-badge--sm" aria-hidden>
-              <span /><span /><span />
-            </div>
+            <BrandLogo size={36} title="AzərDash" />
             <span className="text-base font-extrabold text-text-primary font-display">AzərDash</span>
           </div>
         }

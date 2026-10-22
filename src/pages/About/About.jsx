@@ -1,5 +1,6 @@
 import { Card, Col, Row, Typography } from 'antd'
-import { Info, BarChart3, TrendingUp, Users } from 'lucide-react'
+import { BarChart3, TrendingUp, Users } from 'lucide-react'
+import { BrandLogo } from '../../components/brand/BrandLogo'
 
 const { Title, Paragraph, Text } = Typography
 
@@ -7,13 +8,8 @@ export function About() {
   return (
     <div className="page-stack max-w-5xl mx-auto p-4 md:p-8">
       <Card variant="borderless" className="shadow-sm rounded-lg border border-border bg-surface p-6">
-        <div className="flag-strip mb-4" aria-hidden>
-          <span /><span /><span />
-        </div>
         <div className="flex items-center gap-3 mb-6">
-          <div className="brand-badge brand-badge--icon w-12 h-12 rounded-lg flex items-center justify-center text-white shadow-sm">
-            <Info size={24} />
-          </div>
+          <BrandLogo size={48} title="AzərDash" />
           <Title level={2} className="!text-text-primary !m-0 font-display">Haqqımızda</Title>
         </div>
 

@@ -110,32 +110,32 @@
 }
 
 @layer components {
-  /* Flat flag badge: three solid stripes */
-  .brand-badge {
-    @apply w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-border-md flex flex-col;
+  /* Flat AZ flag + flame mark (no gradients) */
+  .brand-logo {
+    @apply relative shrink-0 overflow-hidden rounded-xl border border-border-md;
     box-shadow: var(--shadow-sm);
   }
-  .brand-badge span {
-    @apply flex-1 w-full block;
+  .brand-logo__stripe {
+    @apply absolute left-0 right-0 block;
   }
-  .brand-badge span:nth-child(1) {
+  .brand-logo__stripe--blue {
+    top: 0;
+    height: 34%;
     background: var(--az-blue);
   }
-  .brand-badge span:nth-child(2) {
+  .brand-logo__stripe--red {
+    top: 34%;
+    height: 32%;
     background: var(--az-red);
   }
-  .brand-badge span:nth-child(3) {
+  .brand-logo__stripe--green {
+    top: 66%;
+    height: 34%;
     background: var(--az-green);
   }
-  .brand-badge--sm {
-    @apply w-9 h-9;
-  }
-  .brand-badge--icon {
-    @apply flex items-center justify-center text-white !flex-row;
-    background: var(--az-blue);
-  }
-  .brand-badge--icon span {
-    display: none;
+  .brand-logo__flame {
+    @apply absolute inset-0 m-auto text-white pointer-events-none;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
   }
 
   .brand-mark {
