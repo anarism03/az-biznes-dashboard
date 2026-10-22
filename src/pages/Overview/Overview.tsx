@@ -86,13 +86,15 @@ export function Overview() {
             ) : null}
           </div>
           <ResponsiveContainer width="100%" height={150}>
-            <AreaChart data={annualOfficialMacro} margin={{ top: 8, right: 4, bottom: 0, left: -18 }}>
-              <defs>
-                <linearGradient id="heroGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--teal)" stopOpacity={0.35} />
-                  <stop offset="100%" stopColor="var(--teal)" stopOpacity={0} />
-                </linearGradient>
-              </defs>
+            <AreaChart
+              data={annualOfficialMacro}
+              margin={{ top: 8, right: 4, bottom: 0, left: -18 }}
+              onClick={(state) => {
+                const next = (state as { activeLabel?: string } | null)?.activeLabel
+                if (next) handleYearSelect(String(next))
+              }}
+              style={{ cursor: 'pointer' }}
+            >
               <XAxis dataKey="year" tickLine={false} axisLine={false} tick={{ fontSize: 10, fill: 'var(--chart-tick)' }} />
               <YAxis hide />
               <Tooltip content={<DarkTooltip valueFormatter={(v) => fmt((v ?? 0) / 1000, 1)} />} />
@@ -100,15 +102,11 @@ export function Overview() {
                 type="monotone"
                 dataKey="gdp"
                 name="ÜDM (mln AZN)"
-                stroke="var(--teal)"
+                stroke="var(--az-blue)"
                 strokeWidth={2.5}
-                fill="url(#heroGradient)"
+                fill="var(--az-blue)"
+                fillOpacity={0.15}
                 activeDot={{ r: 5 }}
-                onClick={(state) => {
-                  const next = (state as { activeLabel?: string } | null)?.activeLabel
-                  if (next) handleYearSelect(String(next))
-                }}
-                style={{ cursor: 'pointer' }}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -127,7 +125,7 @@ export function Overview() {
       <div className="source-status">
         <Badge
           status={wbLoading ? 'processing' : wbError ? 'error' : 'success'}
-          color={wbLoading ? '#f59e0b' : wbError ? '#f43f5e' : 'var(--teal)'}
+          color={wbLoading ? '#b45309' : wbError ? 'var(--az-red)' : 'var(--az-green)'}
         />
         <span>Məlumat mənbələri:</span>
         Dünya Bankı Open Data · Dövlət Statistika Komitəsi
@@ -196,13 +194,13 @@ export function Overview() {
               <YAxis tickLine={false} axisLine={false} tick={{ fill: 'var(--chart-tick)', fontSize: 11 }} />
               <Tooltip content={<DarkTooltip />} />
               <Legend wrapperStyle={{ paddingTop: 12 }} />
-              <Bar dataKey="industry" name="Sənaye məhsulu" radius={[4, 4, 0, 0]}>
+              <Bar dataKey="industry" name="Sənaye məhsulu" radius={[2, 2, 0, 0]}>
                 {annualOfficialMacro.map((item) => (
                   <Cell
                     key={item.year}
-                    fill={item.year === year ? '#f59e0b' : 'rgba(245,158,11,0.35)'}
-                    stroke={item.year === year ? '#b45309' : 'transparent'}
-                    strokeWidth={item.year === year ? 2 : 0}
+                    fill={item.year === year ? 'var(--az-red)' : 'color-mix(in srgb, var(--az-red) 35%, transparent)'}
+                    stroke={item.year === year ? 'var(--az-red)' : 'transparent'}
+                    strokeWidth={item.year === year ? 1 : 0}
                   />
                 ))}
               </Bar>
@@ -210,8 +208,9 @@ export function Overview() {
                 type="monotone"
                 dataKey="nonOilGdp"
                 name="Qeyri-neft/qaz ÜDM"
-                fill="rgba(16,185,129,0.15)"
-                stroke="#10b981"
+                fill="var(--az-green)"
+                fillOpacity={0.15}
+                stroke="var(--az-green)"
                 strokeWidth={2}
               />
               <Line type="monotone" dataKey="investment" name="İnvestisiya" stroke="#64748b" strokeDasharray="5 5" dot={false} />
@@ -219,7 +218,7 @@ export function Overview() {
                 type="monotone"
                 dataKey="gdp"
                 name="ÜDM"
-                stroke="var(--teal)"
+                stroke="var(--az-blue)"
                 strokeWidth={2.5}
                 dot={(props) => {
                   const { cx, cy, payload } = props
@@ -229,7 +228,7 @@ export function Overview() {
                       cx={cx}
                       cy={cy}
                       r={active ? 5 : 3}
-                      fill="var(--teal)"
+                      fill="var(--az-blue)"
                       stroke={active ? 'var(--bg-card)' : 'transparent'}
                       strokeWidth={active ? 2 : 0}
                     />
@@ -336,11 +335,11 @@ export function Overview() {
               />
               <Tooltip content={<DarkTooltip />} />
               <Legend wrapperStyle={{ paddingTop: 12 }} />
-              <Bar yAxisId="gdp" dataKey="gdpUsd" name="ÜDM (USD)" radius={[3, 3, 0, 0]}>
+              <Bar yAxisId="gdp" dataKey="gdpUsd" name="ÜDM (USD)" radius={[2, 2, 0, 0]}>
                 {wbTimeSeries.map((item) => (
                   <Cell
                     key={item.year}
-                    fill={item.year === year ? 'var(--teal)' : 'rgba(10,110,106,0.35)'}
+                    fill={item.year === year ? 'var(--az-blue)' : 'color-mix(in srgb, var(--az-blue) 35%, transparent)'}
                   />
                 ))}
               </Bar>
@@ -349,16 +348,16 @@ export function Overview() {
                 type="monotone"
                 dataKey="gdpGrowthPct"
                 name="Real artım (%)"
-                stroke="#f59e0b"
+                stroke="var(--az-green)"
                 strokeWidth={2.5}
-                dot={{ r: 4, fill: '#f59e0b', strokeWidth: 0 }}
+                dot={{ r: 4, fill: 'var(--az-green)', strokeWidth: 0 }}
               />
               <Line
                 yAxisId="pct"
                 type="monotone"
                 dataKey="inflation"
                 name="İnflyasiya (%)"
-                stroke="#f43f5e"
+                stroke="var(--az-red)"
                 strokeWidth={1.5}
                 strokeDasharray="4 3"
                 dot={false}
@@ -378,8 +377,8 @@ export function Overview() {
                 <YAxis tickLine={false} axisLine={false} tick={{ fill: 'var(--chart-tick)', fontSize: 10 }} tickFormatter={(v) => `${Number(v).toFixed(0)}%`} />
                 <Tooltip content={<DarkTooltip />} />
                 <Legend wrapperStyle={{ paddingTop: 8 }} />
-                <Area type="monotone" dataKey="exports" name="İxrac (%)" stroke="var(--teal)" fill="var(--teal)" fillOpacity={0.12} strokeWidth={2} />
-                <Area type="monotone" dataKey="imports" name="İdxal (%)" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.1} strokeWidth={2} />
+                <Area type="monotone" dataKey="exports" name="İxrac (%)" stroke="var(--az-green)" fill="var(--az-green)" fillOpacity={0.14} strokeWidth={2} />
+                <Area type="monotone" dataKey="imports" name="İdxal (%)" stroke="var(--az-blue)" fill="var(--az-blue)" fillOpacity={0.12} strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </ChartCard>
@@ -391,7 +390,7 @@ export function Overview() {
                 <XAxis dataKey="year" tickLine={false} axisLine={false} tick={{ fill: 'var(--chart-tick)', fontSize: 10 }} />
                 <YAxis tickLine={false} axisLine={false} tick={{ fill: 'var(--chart-tick)', fontSize: 10 }} tickFormatter={(v) => `${Number(v).toFixed(1)}%`} />
                 <Tooltip content={<DarkTooltip />} />
-                <Area type="monotone" dataKey="unemployment" name="İşsizlik (%)" stroke="#f43f5e" fill="#f43f5e" fillOpacity={0.12} strokeWidth={2} />
+                <Area type="monotone" dataKey="unemployment" name="İşsizlik (%)" stroke="var(--az-red)" fill="var(--az-red)" fillOpacity={0.14} strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </ChartCard>
@@ -409,7 +408,10 @@ export function Overview() {
                 <Tooltip content={<DarkTooltip />} />
                 <Bar dataKey="value" name="Göstərici (mln AZN)" radius={[4, 4, 0, 0]}>
                   {selectedIndicators.map((item, index) => (
-                    <Cell key={item.name} fill={index < 2 ? 'var(--teal)' : index < 5 ? '#3b82f6' : '#f59e0b'} />
+                    <Cell
+                      key={item.name}
+                      fill={index < 2 ? 'var(--az-blue)' : index < 5 ? 'var(--az-green)' : 'var(--az-red)'}
+                    />
                   ))}
                 </Bar>
               </BarChart>
@@ -421,7 +423,7 @@ export function Overview() {
 
         <ChartCard title="Qərar siqnalı" subtitle="Dashboarddan idarəetmə tövsiyəsi">
           <div className="flex flex-col items-start gap-2.5 h-full">
-            <ArrowUpRight size={32} className="text-teal transition-colors duration-250" />
+            <ArrowUpRight size={32} className="text-az-blue" />
             <h3 className="text-[15px] font-bold text-text-primary leading-snug font-display">
               Diqqət: qeyri-neft sektorlarında drill-down analiz
             </h3>

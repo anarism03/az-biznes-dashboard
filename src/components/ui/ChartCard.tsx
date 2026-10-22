@@ -22,20 +22,16 @@ export function ChartCard({
 }: ChartCardProps) {
   return (
     <Card
-      className={`chart-card rounded-2xl border border-border bg-card shadow-sm h-full flex flex-col transition-all duration-200 hover:shadow-md ${className}`}
+      className={`chart-card border border-border bg-card shadow-sm h-full flex flex-col transition-colors duration-200 ${className}`}
       styles={{ body: { padding: '20px', display: 'flex', flexDirection: 'column', height: '100%' } }}
       variant="borderless"
       {...props}
     >
       <div className="flex justify-between items-start mb-4 gap-3">
         <div className="min-w-0">
-          <h4 className="text-[14px] font-bold text-text-primary m-0 transition-colors duration-250 leading-snug font-display">
-            {title}
-          </h4>
+          <h4 className="text-[14px] font-bold text-text-primary m-0 leading-snug font-display">{title}</h4>
           {subtitle ? (
-            <p className="text-[11px] text-text-muted mt-1 mb-0 transition-colors duration-250 leading-normal">
-              {subtitle}
-            </p>
+            <p className="text-[11px] text-text-muted mt-1 mb-0 leading-normal">{subtitle}</p>
           ) : null}
           {hint ? <p className="chart-hint">{hint}</p> : null}
         </div>

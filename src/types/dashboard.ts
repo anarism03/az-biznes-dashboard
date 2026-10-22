@@ -1,6 +1,6 @@
 export type ThemeMode = 'light' | 'dark'
 
-export type KpiTone = 'teal' | 'blue' | 'amber' | 'rose' | 'violet'
+export type KpiTone = 'blue' | 'green' | 'red' | 'amber' | 'teal' | 'rose' | 'violet'
 
 export interface MacroRow {
   year: string

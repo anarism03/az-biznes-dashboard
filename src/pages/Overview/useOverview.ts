@@ -44,7 +44,7 @@ export function useOverview(message: MessageInstance) {
       unit: 'mlrd AZN',
       change: selectedMacro.growth,
       source: selectedMacro.source,
-      tone: 'teal',
+      tone: 'blue',
     },
     {
       label: 'Qeyri-neft/qaz ÜDM',
@@ -52,7 +52,7 @@ export function useOverview(message: MessageInstance) {
       unit: 'mlrd AZN',
       change: selectedMacro.nonOilGrowth,
       source: 'Dövlət Statistika Komitəsi',
-      tone: 'blue',
+      tone: 'green',
     },
     {
       label: 'Sənaye məhsulu',
@@ -64,7 +64,7 @@ export function useOverview(message: MessageInstance) {
           ? selectedMacro.status
           : undefined,
       source: 'Dövlət Statistika Komitəsi',
-      tone: 'amber',
+      tone: 'red',
     },
     {
       label: 'Əsas kapital investisiya',
@@ -76,7 +76,7 @@ export function useOverview(message: MessageInstance) {
           ? selectedMacro.status
           : undefined,
       source: 'Dövlət Statistika Komitəsi',
-      tone: 'rose',
+      tone: 'amber',
     },
   ]
 

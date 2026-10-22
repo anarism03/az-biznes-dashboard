@@ -16,24 +16,25 @@ export function trendClass(value: number): 'trend-up' | 'trend-down' | 'trend-fl
   return 'trend-flat'
 }
 
+/** Sector palette built from Azerbaijan flag blue / red / green + neutrals (flat solids). */
 const SECTOR_COLORS: Record<string, string> = {
-  'Neft-qaz': '#0a6e6a',
-  Ticarət: '#1d4ed8',
-  Maliyyə: '#0f766e',
-  Turizm: '#b45309',
-  İKT: '#be123c',
+  'Neft-qaz': '#00b5e2',
+  Ticarət: '#e4002b',
+  Maliyyə: '#509e2f',
+  Turizm: '#007a99',
+  İKT: '#e4002b',
   Logistika: '#334155',
-  Sənaye: '#0a6e6a',
-  'Ticarət və nəqliyyat vasitələrinin təmiri': '#1d4ed8',
+  Sənaye: '#00b5e2',
+  'Ticarət və nəqliyyat vasitələrinin təmiri': '#e4002b',
   'Nəqliyyat və anbar təsərrüfatı': '#334155',
   Tikinti: '#b45309',
-  'Kənd təsərrüfatı': '#15803d',
-  'Turistlərin yerləşdirilməsi və ictimai iaşə': '#0369a1',
-  'İnformasiya və rabitə': '#be123c',
+  'Kənd təsərrüfatı': '#509e2f',
+  'Turistlərin yerləşdirilməsi və ictimai iaşə': '#007a99',
+  'İnformasiya və rabitə': '#e4002b',
   'Digər sahələr': '#64748b',
   'Məhsula və idxala xalis vergilər': '#9f1239',
 }
 
 export function sectorColor(sector: string): string {
-  return SECTOR_COLORS[sector] || '#0a6e6a'
+  return SECTOR_COLORS[sector] || '#00b5e2'
 }

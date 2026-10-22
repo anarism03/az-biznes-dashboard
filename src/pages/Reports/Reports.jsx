@@ -23,7 +23,7 @@ export function Reports() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {chapterMap.map((chapter) => (
           <Card key={chapter.title} className="bg-card border border-border shadow-sm" variant="borderless">
-            <Tag color="cyan">{chapter.title}</Tag>
+            <Tag color="blue">{chapter.title}</Tag>
             <h3>{chapter.subtitle}</h3>
             <ul className="mt-4 flex flex-col gap-2 pl-0 list-none m-0 text-text-secondary text-[13px]">
               {chapter.points.map((item) => (

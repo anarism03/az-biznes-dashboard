@@ -39,7 +39,7 @@ export function ToolComparison() {
               <XAxis type="number" domain={[0, 100]} tickLine={false} axisLine={false} />
               <YAxis type="category" dataKey="tool" tickLine={false} axisLine={false} width={78} />
               <Tooltip />
-              <Bar dataKey="total" name="Ümumi skor" fill="#0f766e" radius={[0, 8, 8, 0]} />
+              <Bar dataKey="total" name="Ümumi skor" fill="var(--az-blue)" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -74,9 +74,9 @@ export function ToolComparison() {
             <YAxis domain={[0, 100]} tickLine={false} axisLine={false} />
             <Tooltip />
             <Legend />
-            <Bar dataKey="governance" name="Governance" fill="#0f766e" radius={[6, 6, 0, 0]} />
-            <Bar dataKey="integration" name="İnteqrasiya" fill="#2563eb" radius={[6, 6, 0, 0]} />
-            <Bar dataKey="custom" name="Xüsusiləşdirmə" fill="#7c3aed" radius={[6, 6, 0, 0]} />
+            <Bar dataKey="governance" name="Governance" fill="var(--az-blue)" radius={[2, 2, 0, 0]} />
+            <Bar dataKey="integration" name="İnteqrasiya" fill="var(--az-green)" radius={[2, 2, 0, 0]} />
+            <Bar dataKey="custom" name="Xüsusiləşdirmə" fill="var(--az-red)" radius={[2, 2, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </ChartCard>

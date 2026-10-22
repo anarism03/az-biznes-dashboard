@@ -16,7 +16,7 @@ import { kpiRows } from '../../data/dashboardData'
 import { azNumber, sectorColor } from '../../utils/formatters'
 
 const columns = [
-  { title: 'Perspektiv', dataIndex: 'perspective', render: (value) => <Tag color="cyan">{value}</Tag> },
+  { title: 'Perspektiv', dataIndex: 'perspective', render: (value) => <Tag color="blue">{value}</Tag> },
   { title: 'KPI', dataIndex: 'kpi' },
   { title: 'Vizual forma', dataIndex: 'chart' },
   { title: 'Qərar istifadəsi', dataIndex: 'decision' },
@@ -75,7 +75,7 @@ export function KpiFramework() {
           <ChartCard title="KPI qurma ardıcıllığı" subtitle="Metrikdən qərara qədər">
             <Timeline
               items={[
-                { color: 'teal', content: 'Biznes sualı və qərar sahibi müəyyən edilir' },
+                { color: 'blue', content: 'Biznes sualı və qərar sahibi müəyyən edilir' },
                 { color: 'blue', content: 'Metrik formulu, mənbə sistemi və yenilənmə dövrü yazılır' },
                 { color: 'gold', content: 'Vizual tip göstəricinin məqsədinə görə seçilir' },
                 { color: 'green', content: 'Nəticə qərar sahibi və hesabat çıxışı ilə bağlanır' },
@@ -94,7 +94,7 @@ export function KpiFramework() {
               <YAxis tickLine={false} axisLine={false} tick={{ fill: '#64748b' }} />
               <Tooltip formatter={(value) => `${azNumber(value, 1)} mln AZN`} />
               <Legend />
-              <Bar dataKey="value" name="Göstərici (mln AZN)" fill="#14b8a6" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="value" name="Göstərici (mln AZN)" fill="var(--az-blue)" radius={[2, 2, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -107,7 +107,7 @@ export function KpiFramework() {
                 <XAxis dataKey="year" tickLine={false} axisLine={false} tick={{ fill: '#64748b', fontSize: 11 }} />
                 <YAxis tickLine={false} axisLine={false} tick={{ fill: '#64748b', fontSize: 11 }} tickFormatter={v => `$${v}`} />
                 <Tooltip formatter={(v) => [`$${v} mlrd`, 'ÜDM (USD)']} />
-                <Bar dataKey="gdp_mlrd" name="ÜDM (mlrd USD)" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="gdp_mlrd" name="ÜDM (mlrd USD)" fill="var(--az-green)" radius={[2, 2, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>

@@ -7,7 +7,6 @@ import {
   DatabaseZap,
   Download,
   FileText,
-  Flame,
   Gauge,
   Info,
   Moon,
@@ -170,8 +169,8 @@ export function DashboardShell() {
             className="flex items-center justify-center pt-5 pb-4 border-b border-border decoration-none transition-colors duration-250 overflow-hidden"
             aria-label="Ana səhifə"
           >
-            <div className="brand-badge">
-              <Flame size={22} />
+            <div className="brand-badge" aria-hidden>
+              <span /><span /><span />
             </div>
             <div
               className={`overflow-hidden transition-all duration-[400ms] ease-[cubic-bezier(0.25,1,0.5,1)] whitespace-nowrap ${
@@ -225,16 +224,16 @@ export function DashboardShell() {
                   type="text"
                   icon={theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
                   onClick={toggleTheme}
-                  className="!text-text-secondary hover:!text-teal"
+                  className="!text-text-secondary hover:!text-az-blue"
                 />
                 <Button
                   type="text"
                   icon={<Search size={18} />}
                   onClick={() => setSearchOpen(true)}
-                  className="!text-text-secondary hover:!text-teal"
+                  className="!text-text-secondary hover:!text-az-blue"
                 />
                 <Dropdown menu={exportMenu} trigger={['click']}>
-                  <Button type="text" icon={<Download size={18} />} className="!text-text-secondary hover:!text-teal" />
+                  <Button type="text" icon={<Download size={18} />} className="!text-text-secondary hover:!text-az-blue" />
                 </Dropdown>
               </div>
             )}
@@ -244,7 +243,7 @@ export function DashboardShell() {
             {!isCompact && (
               <div className="flex items-center gap-2 mr-2">
                 <button
-                  className="flex items-center justify-center w-9 h-9 rounded-lg border border-border-md bg-card text-text-secondary cursor-pointer transition-all duration-200 hover:bg-hover hover:text-teal hover:border-teal"
+                  className="flex items-center justify-center w-9 h-9 rounded-lg border border-border-md bg-card text-text-secondary cursor-pointer transition-colors duration-200 hover:bg-hover hover:text-az-blue hover:border-az-blue"
                   onClick={toggleTheme}
                   aria-label="Temanı dəyiş"
                   type="button"
@@ -289,23 +288,23 @@ export function DashboardShell() {
               {new Date().getFullYear()}
             </div>
             <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
-              <Link to="/about" className="hover:text-teal transition-colors">
+              <Link to="/about" className="hover:text-az-blue transition-colors">
                 Haqqımızda
               </Link>
-              <Link to="/reports" className="hover:text-teal transition-colors">
+              <Link to="/reports" className="hover:text-az-blue transition-colors">
                 Hesabat və mənbələr
               </Link>
-              <a href="mailto:ismayilzadeanar310@gmail.com" className="hover:text-teal transition-colors">
+              <a href="mailto:ismayilzadeanar310@gmail.com" className="hover:text-az-blue transition-colors">
                 ismayilzadeanar310@gmail.com
               </a>
-              <a href="tel:+994504496536" className="hover:text-teal transition-colors">
+              <a href="tel:+994504496536" className="hover:text-az-blue transition-colors">
                 +994 50 449 65 36
               </a>
               <a
                 href="https://linkedin.com/in/anarismayilzada"
                 target="_blank"
                 rel="noreferrer"
-                className="hover:text-teal transition-colors"
+                className="hover:text-az-blue transition-colors"
               >
                 LinkedIn
               </a>
@@ -317,8 +316,8 @@ export function DashboardShell() {
       <Drawer
         title={
           <div className="flex items-center gap-3">
-            <div className="brand-badge brand-badge--sm">
-              <Flame size={18} />
+            <div className="brand-badge brand-badge--sm" aria-hidden>
+              <span /><span /><span />
             </div>
             <span className="text-base font-extrabold text-text-primary font-display">AzərDash</span>
           </div>
@@ -353,14 +352,14 @@ export function DashboardShell() {
               <button
                 key={`${item.route}-${item.title}`}
                 type="button"
-                className="w-full text-left p-3 mb-2 rounded-xl border border-border bg-base hover:bg-hover hover:border-teal transition-all duration-200 cursor-pointer flex flex-col group"
+                className="w-full text-left p-3 mb-2 rounded-lg border border-border bg-base hover:bg-hover hover:border-az-blue transition-colors duration-200 cursor-pointer flex flex-col group"
                 onClick={() => {
                   navigate(item.route)
                   setSearchOpen(false)
                   setQuery('')
                 }}
               >
-                <strong className="text-sm text-text-primary group-hover:text-teal transition-colors block">
+                <strong className="text-sm text-text-primary group-hover:text-az-blue transition-colors block">
                   {item.title}
                 </strong>
                 <span className="text-xs text-text-secondary mt-1 block">{item.text}</span>

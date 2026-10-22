@@ -23,7 +23,7 @@ export function FilterChips({
   return (
     <div className="filter-chips">
       <span className="filter-chips__label">Aktiv filtrlər</span>
-      <Tag color="cyan">İl: {year}</Tag>
+      <Tag color="blue">İl: {year}</Tag>
       {sector !== 'Hamısı' ? (
         <Tag
           color="blue"

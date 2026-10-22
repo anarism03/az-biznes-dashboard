@@ -15,7 +15,7 @@ export function ApiKpiCard({ label, loading, children, active, onClick }: ApiKpi
   return (
     <Comp
       type={onClick ? 'button' : undefined}
-      className={`kpi-card tone-blue ${active ? 'is-active' : ''} ${onClick ? 'is-interactive' : ''}`}
+      className={`kpi-card tone-blue ${active ? 'is-active' : ''} ${onClick ? 'is-interactive' : ''}`.trim()}
       style={{ minHeight: 160 }}
       onClick={onClick}
     >

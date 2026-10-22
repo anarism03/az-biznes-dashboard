@@ -10,7 +10,7 @@ export function KpiCard({
   change = 0,
   changeText,
   source,
-  tone = 'teal',
+  tone = 'blue',
   active = false,
   onClick,
   loading = false,
@@ -24,7 +24,6 @@ export function KpiCard({
       onClick={onClick}
       disabled={!onClick}
     >
-      <div className="kpi-glow" />
       <div className="kpi-row">
         <span>{label}</span>
         <Tag color={positive ? 'success' : 'error'} className="kpi-tag !flex items-center gap-0.5">
