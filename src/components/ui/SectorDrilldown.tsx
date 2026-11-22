@@ -1,7 +1,6 @@
-import { Button, Drawer, Progress, Tag } from 'antd'
-import { ArrowUpRight } from 'lucide-react'
-import { sectorColor } from '../../utils/formatters'
-import { fmt } from '../../pages/Overview/utils'
+import { Drawer } from 'antd'
+import { ArrowUpRight, Filter } from 'lucide-react'
+import { sectorColor, azNumber } from '../../utils/formatters'
 import type { MacroRow, SectorShare } from '../../types/dashboard'
 
 interface SectorDrilldownProps {
@@ -12,6 +11,7 @@ interface SectorDrilldownProps {
   macro: MacroRow
   onClose: () => void
   onApplySectorFilter: (sector: string) => void
+  onSelectPeer: (sector: string) => void
 }
 
 export function SectorDrilldown({
@@ -22,82 +22,81 @@ export function SectorDrilldown({
   macro,
   onClose,
   onApplySectorFilter,
+  onSelectPeer,
 }: SectorDrilldownProps) {
   const selected = shares.find((item) => item.sector === sector)
   const ranked = [...shares].sort((a, b) => b.share - a.share)
   const rank = selected ? ranked.findIndex((item) => item.sector === selected.sector) + 1 : null
-  const peers = ranked.filter((item) => item.sector !== sector).slice(0, 4)
+  const peers = ranked.filter((item) => item.sector !== sector).slice(0, 5)
+  const color = selected ? sectorColor(selected.sector) : 'var(--az-blue)'
+  const estimate = selected ? (macro.gdp * selected.share) / 100 / 1000 : null
 
   return (
-    <Drawer
-      title={sector ? `${sector} — drill-down` : 'Sektor detalı'}
-      open={open}
-      onClose={onClose}
-      width={420}
-      destroyOnHidden
-    >
+    <Drawer title={sector ?? 'Sektor detalı'} open={open} onClose={onClose} width={440} destroyOnHidden placement="right">
       {!selected ? (
-        <p className="text-sm text-text-secondary">Sektor seçilməyib.</p>
+        <p className="text-text-secondary">Bu il üçün seçilmiş sektorun payı yoxdur.</p>
       ) : (
-        <div className="drilldown-body">
-          <div className="drilldown-hero">
-            <span className="eyebrow">{year} · ÜDM payı</span>
-            <strong style={{ color: sectorColor(selected.sector) }}>{fmt(selected.share)}%</strong>
-            <p>
-              Bu sektor seçilmiş ildə ÜDM strukturunda{' '}
-              {rank ? `${rank}-ci` : '—'} yerdədir. Qərarvermə üçün digər sektorlarla pay müqayisəsi və
-              makro kontekst eyni paneldə saxlanılır.
+        <div className="drill">
+          <div>
+            <div className="text-[14px] text-text-secondary font-semibold">{year} · ÜDM-dəki payı</div>
+            <div className="drill__value num" style={{ color }}>
+              {azNumber(selected.share, 1)}%
+            </div>
+            <p className="text-[14.5px] leading-relaxed text-text-secondary mt-3 mb-0">
+              Sektor seçilmiş ildə ÜDM strukturunda {rank}-ci yerdədir. Pay ilə ÜDM-in həcmi əsasında hesablanan təxmini
+              dəyər təxminən <strong className="text-text-primary">{azNumber(estimate, 1)} mlrd AZN</strong>-dir.
             </p>
           </div>
 
-          <Progress
-            percent={selected.share}
-            strokeColor={sectorColor(selected.sector)}
-            trailColor="var(--border)"
-            format={(p) => `${fmt(p ?? 0)}%`}
-          />
+          <div className="sector-row__track" style={{ height: 10 }}>
+            <span style={{ width: `${selected.share}%`, background: color }} />
+          </div>
 
-          <div className="drilldown-meta">
+          <div className="drill__meta">
             <div>
-              <small>Makro kontekst</small>
-              <strong>{fmt(macro.gdp / 1000)} mlrd AZN ÜDM</strong>
+              <small>ÜDM ({macro.period})</small>
+              <strong className="num">{azNumber(macro.gdp / 1000, 1)} mlrd AZN</strong>
             </div>
             <div>
-              <small>Qeyri-neft artımı</small>
-              <strong>{fmt(macro.nonOilGrowth)}%</strong>
+              <small>Qeyri-neft/qaz artımı</small>
+              <strong className="num">{azNumber(macro.nonOilGrowth, 1)}%</strong>
             </div>
             <div>
-              <small>Dövr statusu</small>
-              <Tag color={macro.status === 'Tam il' ? 'green' : 'gold'}>{macro.status}</Tag>
+              <small>Sıra</small>
+              <strong>
+                {rank} / {shares.length}
+              </strong>
+            </div>
+            <div>
+              <small>Dövr</small>
+              <strong>{macro.status}</strong>
             </div>
           </div>
 
-          <h4 className="drilldown-subtitle">Müqayisəli sektorlar</h4>
-          <ul className="drilldown-peers">
-            {peers.map((peer) => (
-              <li key={peer.sector}>
-                <button type="button" onClick={() => onApplySectorFilter(peer.sector)}>
-                  <span style={{ background: sectorColor(peer.sector) }} />
-                  <strong>{peer.sector}</strong>
-                  <em>{fmt(peer.share)}%</em>
+          <div>
+            <div className="text-[14px] font-bold mb-2">Müqayisə üçün digər sektorlar</div>
+            <div className="sector-list">
+              {peers.map((peer) => (
+                <button key={peer.sector} type="button" className="sector-row press" onClick={() => onSelectPeer(peer.sector)}>
+                  <span className="sector-row__name">
+                    <span className="dot" style={{ background: sectorColor(peer.sector) }} />
+                    <span>{peer.sector}</span>
+                  </span>
+                  <span className="sector-row__value num">{azNumber(peer.share, 1)}%</span>
                 </button>
-              </li>
-            ))}
-          </ul>
-
-          <div className="drilldown-actions">
-            <Button
-              type="primary"
-              icon={<ArrowUpRight size={16} />}
-              onClick={() => {
-                onApplySectorFilter(selected.sector)
-                onClose()
-              }}
-            >
-              Filtrə tətbiq et
-            </Button>
-            <Button onClick={onClose}>Bağla</Button>
+              ))}
+            </div>
           </div>
+
+          <div className="flex gap-2 flex-wrap">
+            <button type="button" className="pill-btn pill-btn--primary press" onClick={() => onApplySectorFilter(selected.sector)}>
+              <Filter size={16} /> Panelə filtr kimi tətbiq et
+            </button>
+            <button type="button" className="pill-btn press" onClick={onClose}>
+              Bağla <ArrowUpRight size={16} />
+            </button>
+          </div>
+          <p className="text-[12.5px] text-text-muted m-0">Mənbə: {macro.source}. Təxmini dəyər pay × ÜDM kimi hesablanıb.</p>
         </div>
       )}
     </Drawer>

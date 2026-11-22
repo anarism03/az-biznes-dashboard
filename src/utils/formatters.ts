@@ -1,9 +1,14 @@
+/**
+ * Azərbaycan standartına uyğun rəqəm: minliklər boşluqla, onluq hissə vergüllə (129 094,0).
+ * Brauzerin ICU dəstindən asılı olmasın deyə əl ilə formatlanır.
+ */
 export function azNumber(value: number | null | undefined, digits = 0): string {
   if (value === null || value === undefined || Number.isNaN(value)) return '—'
-  return new Intl.NumberFormat('az-AZ', {
-    maximumFractionDigits: digits,
-    minimumFractionDigits: digits,
-  }).format(value)
+  const fixed = Math.abs(value).toFixed(digits)
+  const [int, frac] = fixed.split('.')
+  const grouped = int.length > 3 ? int.replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0') : int
+  const sign = value < 0 && Number(fixed) !== 0 ? '−' : ''
+  return `${sign}${grouped}${frac ? `,${frac}` : ''}`
 }
 
 export function azCurrency(value: number, digits = 1): string {
@@ -16,25 +21,19 @@ export function trendClass(value: number): 'trend-up' | 'trend-down' | 'trend-fl
   return 'trend-flat'
 }
 
-/** Sector palette built from Azerbaijan flag blue / red / green + neutrals (flat solids). */
+/** Sektor palitrası: bayraq rəngləri və neytral tonlar. Oxşar sektorlar bir-birindən ayrılsın deyə tonlar fərqlidir. */
 const SECTOR_COLORS: Record<string, string> = {
-  'Neft-qaz': '#00b5e2',
-  Ticarət: '#e4002b',
-  Maliyyə: '#509e2f',
-  Turizm: '#007a99',
-  İKT: '#e4002b',
-  Logistika: '#334155',
-  Sənaye: '#00b5e2',
-  'Ticarət və nəqliyyat vasitələrinin təmiri': '#e4002b',
-  'Nəqliyyat və anbar təsərrüfatı': '#334155',
-  Tikinti: '#b45309',
-  'Kənd təsərrüfatı': '#509e2f',
-  'Turistlərin yerləşdirilməsi və ictimai iaşə': '#007a99',
-  'İnformasiya və rabitə': '#e4002b',
-  'Digər sahələr': '#64748b',
-  'Məhsula və idxala xalis vergilər': '#9f1239',
+  Sənaye: 'var(--az-red)',
+  'Ticarət və nəqliyyat vasitələrinin təmiri': 'var(--az-blue)',
+  'Nəqliyyat və anbar təsərrüfatı': '#2f7e9b',
+  Tikinti: 'var(--amber)',
+  'Kənd təsərrüfatı': 'var(--az-green)',
+  'Turistlərin yerləşdirilməsi və ictimai iaşə': '#7a5bb5',
+  'İnformasiya və rabitə': '#00a3a3',
+  'Digər sahələr': 'var(--slate)',
+  'Məhsula və idxala xalis vergilər': '#a3425f',
 }
 
 export function sectorColor(sector: string): string {
-  return SECTOR_COLORS[sector] || '#00b5e2'
+  return SECTOR_COLORS[sector] || 'var(--az-blue)'
 }

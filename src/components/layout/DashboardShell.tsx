@@ -1,372 +1,424 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { App as AntApp, Button, Drawer, Dropdown, Input, Layout, Menu, Modal, Select, Segmented } from 'antd'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { App as AntApp, Drawer, Dropdown, Modal, Select } from 'antd'
+import { motion } from 'motion/react'
 import {
-  BarChart3,
-  BrainCircuit,
-  DatabaseZap,
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  Copy,
   Download,
-  FileText,
-  Gauge,
-  Info,
+  Expand,
+  FileJson,
+  FileSpreadsheet,
+  Keyboard,
+  Link2,
+  Menu,
   Moon,
-  Network,
   PanelLeftClose,
   PanelLeftOpen,
+  Printer,
   Search,
+  Shrink,
   Sun,
+  Table2,
 } from 'lucide-react'
 import { BrandLogo } from '../brand/BrandLogo'
-import { chapterMap, sectors, sourceLinks, years } from '../../data/dashboardData'
+import { AmbientBackdrop, LiquidGlass, LiquidGlassFilter } from '../glass/LiquidGlass'
+import { CommandPalette, type PaletteCommand } from './CommandPalette'
+import { findNav, navigation } from '../../config/navigation'
+import { sectors as sectorOptions, years } from '../../data/dashboardData'
 import { useDashboardFilters } from '../../hooks/useDashboardFilters'
+import { useHotkeys } from '../../hooks/useHotkeys'
 import { useTheme } from '../../contexts/ThemeContext'
-import {
-  copySummary,
-  exportDashboardCsv,
-  exportDashboardExcel,
-  exportDashboardJson,
-} from '../../utils/exportData'
+import { copySummary, exportDashboardCsv, exportDashboardExcel, exportDashboardJson } from '../../utils/exportData'
 
-const { Header, Sider, Content, Footer } = Layout
+const spring = { type: 'spring', bounce: 0.2, visualDuration: 0.38 } as const
 
-const navigation = [
-  { key: '/', label: 'İcra paneli', icon: <Gauge size={18} /> },
-  { key: '/kpi-framework', label: 'KPI modeli', icon: <Network size={18} /> },
-  { key: '/tools', label: 'BI alətləri', icon: <BarChart3 size={18} /> },
-  { key: '/empirical-study', label: 'Empirik analiz', icon: <BrainCircuit size={18} /> },
-  { key: '/governance', label: 'Data governance', icon: <DatabaseZap size={18} /> },
-  { key: '/reports', label: 'Hesabat və mənbələr', icon: <FileText size={18} /> },
-  { key: '/about', label: 'Haqqımızda', icon: <Info size={18} /> },
+const shortcuts: [string, string][] = [
+  ['Ctrl / ⌘ + K', 'Komanda paletini açmaq'],
+  ['/', 'Axtarış'],
+  ['← / →', 'Əvvəlki və ya növbəti il'],
+  ['T', 'Açıq / tünd tema'],
+  ['F', 'Təqdimat rejimi (tam ekran)'],
+  ['P', 'Çap və ya PDF hesabatı'],
+  ['?', 'Bu pəncərə'],
 ]
-
-function useMediaQuery(query: string) {
-  const [matches, setMatches] = useState(() =>
-    typeof window !== 'undefined' ? window.matchMedia(query).matches : false,
-  )
-
-  useEffect(() => {
-    const media = window.matchMedia(query)
-    const listener = () => setMatches(media.matches)
-    listener()
-    media.addEventListener('change', listener)
-    return () => media.removeEventListener('change', listener)
-  }, [query])
-
-  return matches
-}
 
 export function DashboardShell() {
   const { message } = AntApp.useApp()
   const location = useLocation()
   const navigate = useNavigate()
-  const [collapsed, setCollapsed] = useState(false)
-  const [mobileNavOpen, setMobileNavOpen] = useState(false)
-  const [searchOpen, setSearchOpen] = useState(false)
-  const [query, setQuery] = useState('')
   const filters = useDashboardFilters()
   const { theme, toggleTheme } = useTheme()
-  const isCompact = useMediaQuery('(max-width: 980px)')
+  const [collapsed, setCollapsed] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [paletteOpen, setPaletteOpen] = useState(false)
+  const [helpOpen, setHelpOpen] = useState(false)
+  const [presenting, setPresenting] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const [hovered, setHovered] = useState<string | null>(null)
+
+  const active = findNav(location.pathname)
 
   useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [location.pathname])
+    window.scrollTo({ top: 0 })
+    document.title = `${active.label} — AzərDash`
+  }, [location.pathname, active.label])
 
-  const selectedKey = useMemo(() => {
-    const match = navigation.find((item) => item.key !== '/' && location.pathname.startsWith(item.key))
-    return match?.key || '/'
-  }, [location.pathname])
-
-  const activeTitle = navigation.find((item) => item.key === selectedKey)?.label || 'İcra paneli'
-
-  const searchIndex = useMemo(() => {
-    const pageDescriptions: Record<string, string> = {
-      '/': 'Əsas icra və performans paneli',
-      '/kpi-framework': 'Biznes modelləri və KPI arxitekturası',
-      '/tools': 'Müxtəlif analitik platformaların texniki müqayisəsi',
-      '/empirical-study': 'Biznes göstəricilərinin empirik analizi',
-      '/governance': 'Data idarəetməsi, ETL və semantik model',
-      '/reports': 'Mənbələr, hesabatlar və metodologiya',
-      '/about': 'Platforma və məqsədimiz haqqında məlumat',
-    }
-
-    const pageItems = navigation.map((item) => ({
-      title: item.label,
-      route: item.key,
-      text: pageDescriptions[item.key] || `${item.label} modulu`,
-    }))
-    const chapterItems = chapterMap.map((chapter) => ({
-      title: chapter.subtitle,
-      route: '/reports',
-      text: `${chapter.title} ${chapter.subtitle} ${chapter.points.join(' ')}`,
-    }))
-    const sourceItems = sourceLinks.map((source) => ({
-      title: source.name,
-      route: '/reports',
-      text: source.detail,
-    }))
-    return [...pageItems, ...chapterItems, ...sourceItems]
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 16)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  const results = useMemo(() => {
-    const normalized = query.trim().toLocaleLowerCase('az-AZ')
-    if (!normalized) return searchIndex.slice(0, 6)
-    return searchIndex
-      .filter((item) => `${item.title} ${item.text}`.toLocaleLowerCase('az-AZ').includes(normalized))
-      .slice(0, 8)
-  }, [query, searchIndex])
+  useEffect(() => {
+    const onFs = () => {
+      if (!document.fullscreenElement) setPresenting(false)
+    }
+    document.addEventListener('fullscreenchange', onFs)
+    return () => document.removeEventListener('fullscreenchange', onFs)
+  }, [])
 
-  const handleNavigate = (key: string) => {
-    navigate(key)
-    setMobileNavOpen(false)
-  }
+  const go = useCallback(
+    (path: string) => {
+      setMobileOpen(false)
+      navigate({ pathname: path, search: location.search }, { viewTransition: true })
+    },
+    [navigate, location.search],
+  )
 
-  const handleExport = async (type: string) => {
-    if (type === 'excel') {
-      exportDashboardExcel(filters)
-      message.success('Excel faylı endirildi')
+  const togglePresent = useCallback(async () => {
+    const next = !presenting
+    setPresenting(next)
+    try {
+      if (next && !document.fullscreenElement) await document.documentElement.requestFullscreen()
+      if (!next && document.fullscreenElement) await document.exitFullscreen()
+    } catch {
+      /* brauzer tam ekrana icazə verməyə bilər — rejim yenə də işləyir */
     }
-    if (type === 'csv') {
-      exportDashboardCsv(filters)
-      message.success('CSV faylı endirildi')
-    }
-    if (type === 'json') {
-      exportDashboardJson(filters)
-      message.success('JSON faylı endirildi')
-    }
-    if (type === 'copy') {
-      await copySummary(filters)
-      message.success('Qısa nəticə clipboard-a kopyalandı')
-    }
-  }
+  }, [presenting])
 
-  const menuItems = navigation.map((item) => ({
-    key: item.key,
-    icon: item.icon,
-    label: item.label,
-  }))
+  const exportAs = useCallback(
+    async (type: string) => {
+      if (type === 'excel') exportDashboardExcel(filters)
+      if (type === 'csv') exportDashboardCsv(filters)
+      if (type === 'json') exportDashboardJson(filters)
+      if (type === 'print') {
+        window.print()
+        return
+      }
+      if (type === 'copy') {
+        try {
+          await copySummary(filters)
+          message.success('Qısa xülasə kopyalandı')
+        } catch {
+          message.error('Kopyalamaq alınmadı: brauzer icazə vermədi')
+        }
+        return
+      }
+      if (type === 'link') {
+        try {
+          await navigator.clipboard.writeText(window.location.href)
+          message.success('Bu görünüşün linki kopyalandı')
+        } catch {
+          message.error('Linki kopyalamaq alınmadı')
+        }
+        return
+      }
+      message.success('Fayl endirildi')
+    },
+    [filters, message],
+  )
+
+  const themeFromEvent = (e: React.MouseEvent) => toggleTheme({ x: e.clientX, y: e.clientY })
+
+  useHotkeys(
+    useMemo(
+      () => ({
+        'mod+k': () => setPaletteOpen((v) => !v),
+        '/': () => setPaletteOpen(true),
+        arrowleft: () => filters.stepYear(-1),
+        arrowright: () => filters.stepYear(1),
+        t: () => toggleTheme(),
+        f: () => togglePresent(),
+        p: () => window.print(),
+        '?': () => setHelpOpen(true),
+      }),
+      [filters, toggleTheme, togglePresent],
+    ),
+    !paletteOpen,
+  )
+
+  const commands = useMemo<PaletteCommand[]>(
+    () => [
+      ...navigation.map((item) => ({
+        id: `nav-${item.path}`,
+        group: 'Səhifələr',
+        label: item.label,
+        hint: item.description,
+        icon: item.icon,
+        run: () => go(item.path),
+      })),
+      ...years.map((y) => ({
+        id: `year-${y}`,
+        group: 'İl seçimi',
+        label: `${y} ili`,
+        hint: y === '2026' ? 'Yanvar–aprel, tam il deyil' : 'Tam il',
+        keywords: 'il dövr',
+        icon: <CalendarDays size={18} />,
+        run: () => filters.setYear(y),
+      })),
+      ...sectorOptions.map((s) => ({
+        id: `sector-${s}`,
+        group: 'Sektor filtri',
+        label: s,
+        keywords: 'sektor',
+        icon: <Table2 size={18} />,
+        run: () => filters.setSector(s),
+      })),
+      {
+        id: 'theme',
+        group: 'Əmrlər',
+        label: theme === 'dark' ? 'Açıq temaya keç' : 'Tünd temaya keç',
+        hint: 'T',
+        icon: theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />,
+        run: () => toggleTheme(),
+      },
+      { id: 'present', group: 'Əmrlər', label: 'Təqdimat rejimi', hint: 'F', icon: <Expand size={18} />, run: togglePresent },
+      { id: 'print', group: 'Əmrlər', label: 'Çap et / PDF kimi saxla', hint: 'P', icon: <Printer size={18} />, run: () => window.print() },
+      { id: 'xls', group: 'Əmrlər', label: 'Excel hesabatı endir', icon: <FileSpreadsheet size={18} />, run: () => exportAs('excel') },
+      { id: 'csv', group: 'Əmrlər', label: 'CSV endir', icon: <Table2 size={18} />, run: () => exportAs('csv') },
+      { id: 'json', group: 'Əmrlər', label: 'JSON endir', icon: <FileJson size={18} />, run: () => exportAs('json') },
+      { id: 'link', group: 'Əmrlər', label: 'Bu görünüşün linkini kopyala', icon: <Link2 size={18} />, run: () => exportAs('link') },
+      { id: 'reset', group: 'Əmrlər', label: 'Filtrləri sıfırla', icon: <Shrink size={18} />, run: filters.clearFilters },
+      { id: 'help', group: 'Əmrlər', label: 'Klaviatura qısayolları', hint: '?', icon: <Keyboard size={18} />, run: () => setHelpOpen(true) },
+    ],
+    [go, filters, theme, toggleTheme, togglePresent, exportAs],
+  )
 
   const exportMenu = {
     items: [
-      { key: 'excel', label: 'Excel (.xls)' },
-      { key: 'csv', label: 'CSV' },
-      { key: 'json', label: 'JSON' },
+      { key: 'excel', label: 'Excel hesabatı', icon: <FileSpreadsheet size={16} /> },
+      { key: 'csv', label: 'CSV', icon: <Table2 size={16} /> },
+      { key: 'json', label: 'JSON', icon: <FileJson size={16} /> },
       { type: 'divider' as const },
-      { key: 'copy', label: 'Qısa nəticəni kopyala' },
+      { key: 'print', label: 'Çap / PDF', icon: <Printer size={16} /> },
+      { key: 'link', label: 'Linki kopyala', icon: <Link2 size={16} /> },
+      { key: 'copy', label: 'Qısa xülasəni kopyala', icon: <Copy size={16} /> },
     ],
-    onClick: ({ key }: { key: string }) => handleExport(key),
+    onClick: ({ key }: { key: string }) => exportAs(key),
+  }
+
+  const yearIdx = years.indexOf(filters.year as (typeof years)[number])
+
+  const navList = (onNavigate?: () => void) => {
+    let group = ''
+    return (
+      <nav className="nav" aria-label="Əsas menyu" onPointerLeave={() => setHovered(null)}>
+        {navigation.map((item) => {
+          const showGroup = item.group !== group
+          group = item.group
+          const isActive = item.path === active.path
+          return (
+            <div key={item.path}>
+              {showGroup ? <div className="nav-group">{item.group}</div> : null}
+              <NavLink
+                to={{ pathname: item.path, search: location.search }}
+                viewTransition
+                onClick={onNavigate}
+                onPointerEnter={() => setHovered(item.path)}
+                onFocus={() => setHovered(item.path)}
+                className={`nav-item press ${isActive ? 'is-active' : ''}`}
+                title={collapsed ? item.label : undefined}
+                aria-current={isActive ? 'page' : undefined}
+              >
+                {hovered === item.path && !isActive ? (
+                  <motion.span layoutId="nav-hover" className="nav-item__hover" transition={spring} />
+                ) : null}
+                {isActive ? <motion.span layoutId="nav-lens" className="nav-item__lens" transition={spring} /> : null}
+                <span className="nav-item__icon">{item.icon}</span>
+                <span className="nav-item__label">{item.label}</span>
+              </NavLink>
+            </div>
+          )
+        })}
+      </nav>
+    )
   }
 
   return (
-    <Layout hasSider={!isCompact} className="min-h-screen bg-base text-text-primary transition-colors duration-250">
-      {!isCompact && (
-        <Sider
-          width={292}
-          collapsedWidth={86}
-          collapsed={collapsed}
-          className="border-r border-border bg-surface !border-r-border !bg-surface sticky top-0 h-screen overflow-y-auto"
-        >
-          <Link
-            to="/"
-            className="flex items-center justify-center pt-5 pb-4 border-b border-border decoration-none transition-colors duration-250 overflow-hidden"
-            aria-label="Ana səhifə"
-          >
-            <BrandLogo size={40} title="AzərDash" />
-            <div
-              className={`overflow-hidden transition-all duration-[400ms] ease-[cubic-bezier(0.25,1,0.5,1)] whitespace-nowrap ${
-                collapsed ? 'w-0 opacity-0 ml-0' : 'w-[150px] opacity-100 ml-3'
-              }`}
-            >
-              <span className="block text-base font-extrabold text-text-primary leading-tight font-display">
-                AzərDash
-              </span>
-              <small className="block text-[11px] font-medium text-text-secondary leading-tight mt-0.5">
-                Biznes Analitika
-              </small>
-            </div>
-          </Link>
+    <>
+      <AmbientBackdrop />
+      <LiquidGlassFilter />
 
-          <Menu
-            mode="inline"
-            theme={theme === 'dark' ? 'dark' : 'light'}
-            selectedKeys={[selectedKey]}
-            items={menuItems}
-            onClick={({ key }) => handleNavigate(String(key))}
-            className="border-none bg-transparent px-2 mt-2"
-          />
-        </Sider>
-      )}
-
-      <Layout className="min-w-0">
-        <Header className="flex flex-col md:flex-row md:items-center justify-between px-0 md:px-6 py-3 md:py-0 gap-3 border-b border-border backdrop-blur-md sticky top-0 z-[100] bg-surface shadow-sm transition-all duration-250 h-auto min-h-[64px] !leading-normal !bg-surface/85 w-full max-w-full">
-          <div className="flex items-center justify-between w-full md:w-auto px-4 md:px-0">
-            <div className="flex items-center gap-2">
-              <Button
-                type="text"
-                icon={collapsed ? <PanelLeftOpen size={20} /> : <PanelLeftClose size={20} />}
-                onClick={() => (isCompact ? setMobileNavOpen(true) : setCollapsed((value) => !value))}
-                aria-label="Menyunu dəyiş"
-                className="text-text-primary flex items-center justify-center hover:bg-hover !text-text-primary !px-2 !-ml-2"
-              />
-              <div>
-                <h2 className="text-[17px] font-bold text-text-primary m-0 font-display line-clamp-1">
-                  {activeTitle}
-                </h2>
-                {!isCompact && (
-                  <p className="text-xs text-text-secondary m-0">Biznes idarəetmə paneli</p>
-                )}
-              </div>
-            </div>
-
-            {isCompact && (
-              <div className="flex items-center gap-1">
-                <Button
-                  type="text"
-                  icon={theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-                  onClick={toggleTheme}
-                  className="!text-text-secondary hover:!text-az-blue"
-                />
-                <Button
-                  type="text"
-                  icon={<Search size={18} />}
-                  onClick={() => setSearchOpen(true)}
-                  className="!text-text-secondary hover:!text-az-blue"
-                />
-                <Dropdown menu={exportMenu} trigger={['click']}>
-                  <Button type="text" icon={<Download size={18} />} className="!text-text-secondary hover:!text-az-blue" />
-                </Dropdown>
-              </div>
-            )}
+      <div className={`app ${collapsed ? 'is-collapsed' : ''} ${presenting ? 'is-presenting' : ''}`}>
+        <LiquidGlass as="aside" chrome refract className="sidebar" aria-label="Kənar menyu">
+          <NavLink to={{ pathname: '/', search: location.search }} viewTransition className="sidebar__brand" aria-label="AzərDash ana səhifə">
+            <BrandLogo size={40} />
+            <span className="sidebar__brand-text">
+              <strong>AzərDash</strong>
+              <small>Qərar üçün vizual analitika</small>
+            </span>
+          </NavLink>
+          {navList()}
+          <div className="sidebar__foot">
+            <span className="avatar" aria-hidden>
+              Aİ
+            </span>
+            <span className="sidebar__foot-text">
+              <strong>Anar İsmayılzadə</strong>
+              <span>UNEC · Data elmləri</span>
+            </span>
           </div>
+        </LiquidGlass>
 
-          <div className={`flex items-center gap-3 ${isCompact ? 'w-full overflow-x-auto no-scrollbar px-4 pb-1' : ''}`}>
-            {!isCompact && (
-              <div className="flex items-center gap-2 mr-2">
-                <button
-                  className="flex items-center justify-center w-9 h-9 rounded-lg border border-border-md bg-card text-text-secondary cursor-pointer transition-colors duration-200 hover:bg-hover hover:text-az-blue hover:border-az-blue"
-                  onClick={toggleTheme}
-                  aria-label="Temanı dəyiş"
-                  type="button"
-                >
-                  {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
-                </button>
-                <Button icon={<Search size={17} />} onClick={() => setSearchOpen(true)}>
-                  Axtarış
-                </Button>
-                <Dropdown menu={exportMenu} trigger={['click']}>
-                  <Button icon={<Download size={17} />}>Yüklə</Button>
-                </Dropdown>
-              </div>
-            )}
+        <div className="main">
+          <LiquidGlass as="header" chrome refract className={`topbar no-print ${scrolled ? 'is-scrolled' : ''}`}>
+            <button
+              type="button"
+              className="icon-btn press"
+              onClick={() => (window.innerWidth <= 1080 ? setMobileOpen(true) : setCollapsed((v) => !v))}
+              aria-label="Menyunu aç və ya bağla"
+            >
+              <span className="hidden max-[1080px]:inline-grid">
+                <Menu size={20} />
+              </span>
+              <span className="inline-grid max-[1080px]:hidden">
+                {collapsed ? <PanelLeftOpen size={20} /> : <PanelLeftClose size={20} />}
+              </span>
+            </button>
+            <div className="topbar__title">
+              <h1>{active.label}</h1>
+              <span>{active.description}</span>
+            </div>
 
-            <Segmented
-              value={filters.year}
-              onChange={(value) => filters.setYear(String(value))}
-              options={[...years]}
-              className="year-switch shrink-0"
-              size={isCompact ? 'small' : 'middle'}
-            />
+            <div className="year-stepper flex items-center gap-1 rounded-full p-1" style={{ background: 'var(--bg-hover)' }}>
+              <button
+                type="button"
+                className="icon-btn press"
+                style={{ width: 34, height: 34 }}
+                onClick={() => filters.stepYear(-1)}
+                disabled={yearIdx <= 0}
+                aria-label="Əvvəlki il"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <span className="num px-1 text-[15px] font-bold" aria-live="polite">
+                {filters.year}
+              </span>
+              <button
+                type="button"
+                className="icon-btn press"
+                style={{ width: 34, height: 34 }}
+                onClick={() => filters.stepYear(1)}
+                disabled={yearIdx >= years.length - 1}
+                aria-label="Növbəti il"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+
             <Select
               value={filters.sector}
               onChange={filters.setSector}
-              options={sectors.map((item) => ({ label: item, value: item }))}
-              className="sector-select shrink-0 min-w-[130px]"
-              size={isCompact ? 'small' : 'middle'}
+              options={sectorOptions.map((item) => ({ label: item, value: item }))}
+              className="sector-select hide-sm"
               popupMatchSelectWidth={false}
+              aria-label="Sektor filtri"
             />
-          </div>
-        </Header>
 
-        <Content className="p-4 md:p-6 max-w-[1440px] mx-auto w-full transition-colors duration-250 overflow-hidden">
-          <Outlet context={filters} />
-        </Content>
-
-        <Footer className="text-center bg-surface border-t border-border px-6 py-6 transition-colors duration-250">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 max-w-[1440px] mx-auto text-sm text-text-secondary">
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-text-primary font-display">AzərDash</span> ©{' '}
-              {new Date().getFullYear()}
-            </div>
-            <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
-              <Link to="/about" className="hover:text-az-blue transition-colors">
-                Haqqımızda
-              </Link>
-              <Link to="/reports" className="hover:text-az-blue transition-colors">
-                Hesabat və mənbələr
-              </Link>
-              <a href="mailto:ismayilzadeanar310@gmail.com" className="hover:text-az-blue transition-colors">
-                ismayilzadeanar310@gmail.com
-              </a>
-              <a href="tel:+994504496536" className="hover:text-az-blue transition-colors">
-                +994 50 449 65 36
-              </a>
-              <a
-                href="https://linkedin.com/in/anarismayilzada"
-                target="_blank"
-                rel="noreferrer"
-                className="hover:text-az-blue transition-colors"
+            <button type="button" className="pill-btn press hide-sm" onClick={() => setPaletteOpen(true)}>
+              <Search size={17} />
+              Axtar
+              <span className="kbd">⌘K</span>
+            </button>
+            <button type="button" className="icon-btn press min-[761px]:hidden" onClick={() => setPaletteOpen(true)} aria-label="Axtar">
+              <Search size={19} />
+            </button>
+            <Dropdown menu={exportMenu} trigger={['click']} placement="bottomRight">
+              <button type="button" className="icon-btn press" aria-label="Yüklə və paylaş">
+                <Download size={19} />
+              </button>
+            </Dropdown>
+            <button type="button" className="icon-btn press hide-sm" onClick={togglePresent} aria-label="Təqdimat rejimi">
+              {presenting ? <Shrink size={19} /> : <Expand size={19} />}
+            </button>
+            <button type="button" className="icon-btn press" onClick={themeFromEvent} aria-label="Temanı dəyiş">
+              <motion.span
+                key={theme}
+                initial={{ rotate: -90, scale: 0.6, opacity: 0 }}
+                animate={{ rotate: 0, scale: 1, opacity: 1 }}
+                transition={spring}
+                className="inline-grid"
               >
-                LinkedIn
+                {theme === 'dark' ? <Sun size={19} /> : <Moon size={19} />}
+              </motion.span>
+            </button>
+          </LiquidGlass>
+
+          <main key={location.pathname} className="page-stack reveal">
+            <Outlet context={filters} />
+          </main>
+
+          <LiquidGlass as="footer" className="footer no-print">
+            <span>
+              <strong className="text-text-primary">AzərDash</strong> · magistr dissertasiyasının praktiki prototipi, UNEC
+              2026
+            </span>
+            <span className="flex flex-wrap gap-4">
+              <a href="https://github.com/anarism03/az-biznes-dashboard" target="_blank" rel="noreferrer">
+                Mənbə kodu
               </a>
-            </div>
-          </div>
-        </Footer>
-      </Layout>
+              <a href="mailto:ismayilzadeanar310@gmail.com">ismayilzadeanar310@gmail.com</a>
+              <button type="button" className="p-0 border-0 bg-transparent text-inherit cursor-pointer hover:text-az-blue" onClick={() => setHelpOpen(true)}>
+                Qısayollar
+              </button>
+            </span>
+          </LiquidGlass>
+        </div>
+      </div>
 
       <Drawer
         title={
-          <div className="flex items-center gap-3">
-            <BrandLogo size={36} title="AzərDash" />
-            <span className="text-base font-extrabold text-text-primary font-display">AzərDash</span>
-          </div>
+          <span className="flex items-center gap-3">
+            <BrandLogo size={34} />
+            <span className="font-bold">AzərDash</span>
+          </span>
         }
         placement="left"
-        open={mobileNavOpen}
-        onClose={() => setMobileNavOpen(false)}
-        size="default"
-        className="mobile-nav-drawer"
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        width={300}
       >
-        <Menu
-          mode="inline"
-          theme={theme === 'dark' ? 'dark' : 'light'}
-          selectedKeys={[selectedKey]}
-          items={menuItems}
-          onClick={({ key }) => handleNavigate(String(key))}
-        />
+        <div className="mb-4">
+          <Select
+            value={filters.sector}
+            onChange={filters.setSector}
+            options={sectorOptions.map((item) => ({ label: item, value: item }))}
+            className="sector-select w-full"
+          />
+        </div>
+        {navList(() => setMobileOpen(false))}
       </Drawer>
 
-      <Modal title="Dashboard axtarışı" open={searchOpen} onCancel={() => setSearchOpen(false)} footer={null} width={680}>
-        <Input
-          size="large"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          prefix={<Search size={18} />}
-          placeholder="Məsələn: KPI, governance, Power BI, gəlir..."
-          autoFocus
-        />
-        <div className="search-result-list">
-          {results.length ? (
-            results.map((item) => (
-              <button
-                key={`${item.route}-${item.title}`}
-                type="button"
-                className="w-full text-left p-3 mb-2 rounded-lg border border-border bg-base hover:bg-hover hover:border-az-blue transition-colors duration-200 cursor-pointer flex flex-col group"
-                onClick={() => {
-                  navigate(item.route)
-                  setSearchOpen(false)
-                  setQuery('')
-                }}
-              >
-                <strong className="text-sm text-text-primary group-hover:text-az-blue transition-colors block">
-                  {item.title}
-                </strong>
-                <span className="text-xs text-text-secondary mt-1 block">{item.text}</span>
-              </button>
-            ))
-          ) : (
-            <div className="empty-search">Nəticə tapılmadı. Başqa açar söz yazın.</div>
-          )}
-        </div>
+      <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} commands={commands} />
+
+      <Modal open={helpOpen} onCancel={() => setHelpOpen(false)} footer={null} title="Klaviatura qısayolları" width={460}>
+        <table className="data-table">
+          <tbody>
+            {shortcuts.map(([key, label]) => (
+              <tr key={key}>
+                <td style={{ width: 150 }}>
+                  <span className="kbd">{key}</span>
+                </td>
+                <td>{label}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </Modal>
-    </Layout>
+    </>
   )
 }

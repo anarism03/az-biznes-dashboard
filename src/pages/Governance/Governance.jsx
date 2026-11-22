@@ -1,60 +1,85 @@
-import { Card, Progress, Steps, Tag } from 'antd'
-import { CheckCircle2, ShieldCheck } from 'lucide-react'
-import { ChartCard } from '../../components/ui/ChartCard'
+import { CheckCircle2, ChevronRight, ShieldAlert } from 'lucide-react'
+import { Panel } from '../../components/ui/ChartCard'
+import { PageIntro } from '../../components/ui/PageIntro'
 import { governanceLayers } from '../../data/dashboardData'
+
+const rules = [
+  'Mənbə sistemi və KPI sahibi sənədləşdirilir.',
+  'Hər göstərici üçün düstur və yenilənmə tezliyi ayrıca yazılır.',
+  'Boş, təkrar və kənar qiymətlər inteqrasiya mərhələsində yoxlanılır.',
+  'Panelda göstəricinin aid olduğu il və son yenilənmə vaxtı görünür.',
+  'Seçilmiş il üçün məlumat yoxdursa, başqa ilin dəyəri səssizcə göstərilmir.',
+]
+
+const roles = [
+  { title: 'Məlumat sahibi', text: 'Mənbənin doğruluğu və yenilənməsi' },
+  { title: 'BI analitik', text: 'Model, vizual kodlaşdırma və test' },
+  { title: 'Biznes rəhbəri', text: 'KPI hədəfi və qərar mövzusu' },
+  { title: 'İcra komandası', text: 'Tədbir və nəticə üzrə geribildirim' },
+]
 
 export function Governance() {
   return (
-    <div className="page-stack">
+    <>
+      <PageIntro
+        kicker="Məlumat idarəetməsi"
+        title="Vizual qat məlumat xəttinin son halqasıdır"
+        description="Məlumat keyfiyyəti, metrik tərifi və semantik model zəifdirsə, qrafik nə qədər yaxşı görünsə də qərarı səhv istiqamətə apara bilər. Aşağıda göstəricinin mənbədən qərara qədər keçdiyi yol və hər mərhələnin yoxlamaları verilir."
+      />
 
-      <ChartCard title="Dashboardun data xətti" subtitle="Mənbədən göstəriciyə, göstəricidən qərara">
-        <div className="architecture-flow">
-          {governanceLayers.map((item, index) => (
-            <div key={item.layer} className="architecture-node">
-              <div className="node-index">{index + 1}</div>
-              <h3>{item.layer}</h3>
-              <p>{item.text}</p>
-              <Progress percent={item.status} strokeColor={item.status > 85 ? 'var(--az-green)' : 'var(--az-red)'} />
+      <Panel title="Mənbədən qərara qədər məlumat xətti" subtitle="Beş mərhələ və hər mərhələnin minimal yoxlamaları">
+        <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+          {governanceLayers.map((l, i) => (
+            <div key={l.layer} className="relative rounded-2xl p-4 flex flex-col gap-2" style={{ background: 'color-mix(in srgb, var(--text-primary) 4%, transparent)' }}>
+              <div className="flex items-center justify-between">
+                <span className="text-[13px] font-semibold text-az-blue">{i + 1}-ci mərhələ</span>
+                {i < governanceLayers.length - 1 ? <ChevronRight size={18} className="text-text-muted" /> : null}
+              </div>
+              <div className="text-[16px] font-bold">{l.layer}</div>
+              <p className="text-[13.5px] text-text-secondary leading-relaxed m-0">{l.text}</p>
+              <ul className="prose-list mt-auto pt-2">
+                {l.checks.map((c) => (
+                  <li key={c} style={{ fontSize: 13.5 }}>
+                    <CheckCircle2 size={15} />
+                    <span>{c}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>
-      </ChartCard>
+      </Panel>
 
-      <div className="analytics-grid two-one">
-        <Card className="governance-card" variant="borderless">
-          <ShieldCheck size={34} />
-          <h3>Data keyfiyyəti qaydaları</h3>
-          <ul>
-            <li><CheckCircle2 size={16} /> Mənbə sistemi və KPI sahibi sənədləşdirilir.</li>
-            <li><CheckCircle2 size={16} /> Hər göstərici üçün formula və yenilənmə tezliyi ayrıca yazılır.</li>
-            <li><CheckCircle2 size={16} /> Null, dublikat və kənarlaşma testləri ETL mərhələsində edilir.</li>
-            <li><CheckCircle2 size={16} /> Dashboardda son yenilənmə vaxtı və etibar səviyyəsi görünür.</li>
+      <div className="grid-2">
+        <Panel title="Məlumat keyfiyyəti qaydaları" subtitle="AzərDash prototipində tətbiq olunanlar daxil">
+          <ul className="prose-list">
+            {rules.map((r) => (
+              <li key={r}>
+                <CheckCircle2 size={17} />
+                <span>{r}</span>
+              </li>
+            ))}
           </ul>
-        </Card>
-
-        <ChartCard title="İdarəetmə modeli" subtitle="RACI məntiqi ilə analitika rolları">
-          <Steps
-            orientation="vertical"
-            current={3}
-            items={[
-              { title: 'Data sahibi', content: 'Mənbə və keyfiyyət məsuliyyəti' },
-              { title: 'BI analitik', content: 'Model, vizual kodlaşdırma və test' },
-              { title: 'Biznes rəhbəri', content: 'KPI hədəfi və qərar mövzusu' },
-              { title: 'İcra komandası', content: 'Tövsiyə, tədbir və nəticə üzrə geribildirim' },
-            ]}
-          />
-        </ChartCard>
+        </Panel>
+        <Panel title="Rollar və məsuliyyət" subtitle="Analitika layihəsində vəzifə bölgüsü">
+          <div className="grid gap-3">
+            {roles.map((r) => (
+              <div key={r.title} className="flex items-center justify-between gap-3 rounded-2xl p-3" style={{ background: 'color-mix(in srgb, var(--text-primary) 4%, transparent)' }}>
+                <strong className="text-[15px]">{r.title}</strong>
+                <span className="text-[13.5px] text-text-secondary text-right">{r.text}</span>
+              </div>
+            ))}
+          </div>
+        </Panel>
       </div>
 
-      <Card className="method-card" variant="borderless">
-        <Tag color="gold">Risk xəbərdarlığı</Tag>
-        <h3>Garbage in, garbage out prinsipi</h3>
-        <p>
-          Dissertasiyanın metodoloji xəttinə görə vizual interfeys son mərhələdir. Data keyfiyyəti,
-          metrik tərifi və semantik model zəifdirsə, qrafik nə qədər yaxşı görünsə də, qərarı
-          səhv istiqamətə apara bilər. Bu səbəbdən governance ayrıca səhifə kimi saxlanılıb.
-        </p>
-      </Card>
-    </div>
+      <div className="note">
+        <ShieldAlert size={18} />
+        <span>
+          <strong>“Zibil giriş — zibil çıxış”.</strong> Gözəl, lakin səhv məlumatlı panel səhv cədvəldən daha təhlükəlidir, çünki vizual forma
+          rəqəmə əlavə inam yaradır. Buna görə məlumatın doğruluq və tamlıq yoxlaması paneldən əvvəl gəlir.
+        </span>
+      </div>
+    </>
   )
 }

@@ -1,149 +1,142 @@
 import { useOutletContext } from 'react-router-dom'
-import { Card, Col, Row, Skeleton, Table, Tag, Timeline } from 'antd'
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Legend,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts'
-import { Globe } from 'lucide-react'
-import { ChartCard } from '../../components/ui/ChartCard'
+import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { Coins, Database, GraduationCap, Layers, LayoutDashboard, Settings2, Users, Workflow } from 'lucide-react'
+import { LiquidGlass } from '../../components/glass/LiquidGlass'
+import { Panel } from '../../components/ui/ChartCard'
+import { PageIntro } from '../../components/ui/PageIntro'
+import { ChartTooltip, axisProps } from '../../components/ui/ChartTooltip'
 import { kpiRows } from '../../data/dashboardData'
-import { azNumber, sectorColor } from '../../utils/formatters'
+import { azNumber } from '../../utils/formatters'
 
-const columns = [
-  { title: 'Perspektiv', dataIndex: 'perspective', render: (value) => <Tag color="blue">{value}</Tag> },
-  { title: 'KPI', dataIndex: 'kpi' },
-  { title: 'Vizual forma', dataIndex: 'chart' },
-  { title: 'Qərar istifadəsi', dataIndex: 'decision' },
+const ICONS = { financial: Coins, customer: Users, process: Settings2, learning: GraduationCap }
+const TONES = { financial: 'var(--az-blue)', customer: 'var(--az-green)', process: 'var(--az-red)', learning: 'var(--amber)' }
+
+const layers = [
+  { icon: Database, title: 'Mənbə sistemləri', text: 'ERP, CRM, POS, DSK və Dünya Bankı açıq məlumatları' },
+  { icon: Workflow, title: 'İnteqrasiya və anbar', text: 'Təmizləmə, normallaşdırma, tarixçə və keyfiyyət testləri' },
+  { icon: Layers, title: 'Semantik / metrik qat', text: 'KPI lüğəti, vahid düstur, ölçü vahidi və məsul şəxs' },
+  { icon: LayoutDashboard, title: 'Vizual təqdimat', text: 'KPI kartları, filtr, detal baxışı və qərar siqnalı' },
+]
+
+const steps = [
+  'Biznes sualı və qərar sahibi müəyyən edilir',
+  'Metrik düsturu, mənbə sistemi və yenilənmə dövrü yazılır',
+  'Vizual forma göstəricinin məqsədinə görə seçilir',
+  'Nəticə qərar sahibi və hesabat çıxışı ilə bağlanır',
 ]
 
 export function KpiFramework() {
-  const { sectors, selectedMacro, year, wbYear, wbLoading, wbTimeSeries } = useOutletContext()
-  const indicatorRows = [
-    { name: 'ÜDM', value: selectedMacro.gdp },
-    { name: 'Qeyri-neft/qaz ÜDM', value: selectedMacro.nonOilGdp },
-    { name: 'Sənaye', value: selectedMacro.industry },
-    { name: 'Qeyri-neft sənayesi', value: selectedMacro.nonOilIndustry },
-    { name: 'İnvestisiya', value: selectedMacro.investment },
-    { name: 'Kənd təsərrüfatı', value: selectedMacro.agriculture },
+  const { selectedMacro: m } = useOutletContext()
+  const rows = [
+    { name: 'ÜDM', value: m.gdp / 1000, c: 'var(--az-blue)' },
+    { name: 'Qeyri-neft/qaz ÜDM', value: m.nonOilGdp / 1000, c: 'var(--az-green)' },
+    { name: 'Sənaye', value: m.industry / 1000, c: 'var(--az-red)' },
+    { name: 'Qeyri-neft sənayesi', value: m.nonOilIndustry / 1000, c: 'color-mix(in srgb, var(--az-red) 55%, transparent)' },
+    { name: 'İnvestisiya', value: m.investment / 1000, c: 'var(--amber)' },
+    { name: 'Kənd təsərrüfatı', value: m.agriculture / 1000, c: 'color-mix(in srgb, var(--az-green) 55%, transparent)' },
   ]
 
-  const wbBarData = (wbTimeSeries || [])
-    .filter(d => d.gdpUsd)
-    .map(d => ({ year: d.year, gdp_mlrd: +(d.gdpUsd / 1e9).toFixed(2) }))
-
   return (
-    <div className="page-stack">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
-        {[
-          { label: 'ÜDM (USD)', value: wbYear?.gdpUsd ? `$${(wbYear.gdpUsd / 1e9).toFixed(1)} mlrd` : '—' },
-          { label: 'Real artım', value: wbYear?.gdpGrowth != null ? `${azNumber(wbYear.gdpGrowth, 1)}%` : '—' },
-          { label: 'İnflyasiya', value: wbYear?.inflation != null ? `${azNumber(wbYear.inflation, 1)}%` : '—' },
-          { label: 'İşsizlik', value: wbYear?.unemployment != null ? `${azNumber(wbYear.unemployment, 1)}%` : '—' },
-        ].map(item => (
-          <div key={item.label} style={{
-            padding: 16, borderRadius: 12,
-            background: 'var(--bg-card)', border: '1px solid var(--border)',
-            position: 'relative', overflow: 'hidden',
-          }}>
-            <div style={{ fontSize: 11, color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
-              {item.label}
-            </div>
-            {wbLoading ? (
-              <Skeleton active title={{ width: '70%' }} paragraph={false} />
-            ) : (
-              <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)' }}>{item.value}</div>
-            )}
+    <>
+      <PageIntro
+        kicker="KPI çərçivəsi"
+        title="Hər göstərici bir qərara xidmət etməlidir"
+        description="Balanslaşdırılmış Hesab Kartının dörd perspektivi, KPI lüğəti və göstəricinin mənbədən panelə qədər keçdiyi yol. KPI sayı universal həddə görə deyil, qərar tapşırığına görə seçilir."
+      />
 
-            <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 6 }}>{year} · Dünya Bankı</div>
-          </div>
-        ))}
+      <div className="grid-kpi">
+        {kpiRows.map((row) => {
+          const Icon = ICONS[row.key]
+          return (
+            <LiquidGlass key={row.key} className="kpi">
+              <span className="kpi__label">
+                <span className="grid place-items-center w-9 h-9 rounded-xl" style={{ background: `color-mix(in srgb, ${TONES[row.key]} 14%, transparent)`, color: TONES[row.key] }}>
+                  <Icon size={19} />
+                </span>
+                {row.perspective}
+              </span>
+              <p className="text-[15px] font-semibold leading-snug mt-3 mb-1">{row.kpi}</p>
+              <div className="kpi__foot">{row.decision}</div>
+            </LiquidGlass>
+          )
+        })}
       </div>
 
-      <Row gutter={[16, 16]}>
-        <Col xs={24} lg={15}>
-          <ChartCard title="KPI lüğəti və vizual kodlaşdırma" subtitle="Dashboard qurulmazdan əvvəl metrik adı, mənbə və formula aydın olmalıdır">
-            <Table columns={columns} dataSource={kpiRows} pagination={false} />
-          </ChartCard>
-        </Col>
-        <Col xs={24} lg={9}>
-          <ChartCard title="KPI qurma ardıcıllığı" subtitle="Metrikdən qərara qədər">
-            <Timeline
-              items={[
-                { color: 'blue', content: 'Biznes sualı və qərar sahibi müəyyən edilir' },
-                { color: 'blue', content: 'Metrik formulu, mənbə sistemi və yenilənmə dövrü yazılır' },
-                { color: 'gold', content: 'Vizual tip göstəricinin məqsədinə görə seçilir' },
-                { color: 'green', content: 'Nəticə qərar sahibi və hesabat çıxışı ilə bağlanır' },
-              ]}
-            />
-          </ChartCard>
-        </Col>
-      </Row>
+      <Panel title="KPI-nin dashboard arxitekturasına inteqrasiyası" subtitle="Dörd qatlı məntiqi model (dissertasiya, Şəkil 4)">
+        <div className="grid-kpi">
+          {layers.map((l, i) => (
+            <div key={l.title} className="relative rounded-2xl p-4" style={{ background: 'color-mix(in srgb, var(--text-primary) 4%, transparent)' }}>
+              <div className="flex items-center gap-2 text-az-blue mb-2">
+                <l.icon size={20} />
+                <span className="text-[13px] font-semibold text-text-muted">{i + 1}-ci qat</span>
+              </div>
+              <div className="text-[15.5px] font-bold">{l.title}</div>
+              <p className="text-[13.5px] text-text-secondary leading-relaxed mt-1 mb-0">{l.text}</p>
+            </div>
+          ))}
+        </div>
+      </Panel>
 
-      <div className="analytics-grid">
-        <ChartCard title={`${selectedMacro.period} üzrə KPI bazası`} subtitle="Dövlət Statistika Komitəsi, milyon AZN">
-          <ResponsiveContainer width="100%" height={310}>
-            <BarChart data={indicatorRows} margin={{ top: 12, right: 12, left: -16, bottom: 0 }}>
-              <CartesianGrid stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" vertical={false} />
-              <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 10, fill: '#64748b' }} interval={0} angle={-16} textAnchor="end" height={64} />
-              <YAxis tickLine={false} axisLine={false} tick={{ fill: '#64748b' }} />
-              <Tooltip formatter={(value) => `${azNumber(value, 1)} mln AZN`} />
-              <Legend />
-              <Bar dataKey="value" name="Göstərici (mln AZN)" fill="var(--az-blue)" radius={[2, 2, 0, 0]} />
+      <div className="grid-2-1">
+        <Panel title="KPI lüğəti və vizual kodlaşdırma" subtitle="Panel qurulmazdan əvvəl metrik adı, mənbə və vizual forma razılaşdırılır">
+          <div className="overflow-x-auto">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Perspektiv</th>
+                  <th>KPI nümunələri</th>
+                  <th>Vizual forma</th>
+                  <th>Qərar istifadəsi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {kpiRows.map((row) => (
+                  <tr key={row.key}>
+                    <td>
+                      <span className="chip" style={{ color: TONES[row.key], background: `color-mix(in srgb, ${TONES[row.key]} 12%, transparent)` }}>
+                        {row.perspective}
+                      </span>
+                    </td>
+                    <td>{row.kpi}</td>
+                    <td>{row.chart}</td>
+                    <td>{row.decision}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Panel>
+        <Panel title="KPI qurma ardıcıllığı" subtitle="Metrikdən qərara qədər">
+          <ol className="grid gap-3 m-0 p-0 list-none">
+            {steps.map((s, i) => (
+              <li key={s} className="flex gap-3 items-start">
+                <span className="grid place-items-center w-8 h-8 rounded-full shrink-0 text-[14px] font-bold num" style={{ background: 'color-mix(in srgb, var(--az-blue) 13%, transparent)', color: 'var(--az-blue)' }}>
+                  {i + 1}
+                </span>
+                <span className="text-[14.5px] leading-relaxed pt-1">{s}</span>
+              </li>
+            ))}
+          </ol>
+        </Panel>
+      </div>
+
+      <Panel title={`${m.period}: KPI bazası`} subtitle="Dövlət Statistika Komitəsi · mlrd AZN" footer={m.source}>
+        <div style={{ height: 300 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={rows} margin={{ top: 12, right: 8, left: -8, bottom: 0 }}>
+              <CartesianGrid stroke="var(--chart-grid)" vertical={false} />
+              <XAxis dataKey="name" {...axisProps} interval={0} />
+              <YAxis {...axisProps} width={44} />
+              <Tooltip cursor={{ fill: 'var(--bg-hover)' }} content={<ChartTooltip valueFormatter={(v) => `${azNumber(v, 1)} mlrd AZN`} />} />
+              <Bar dataKey="value" name="Göstərici" radius={[10, 10, 3, 3]} maxBarSize={72}>
+                {rows.map((r) => (
+                  <Cell key={r.name} fill={r.c} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
-        </ChartCard>
-
-        {wbBarData.length > 0 ? (
-          <ChartCard title="ÜDM dinamikası (USD) — Dünya Bankı" subtitle="İllik trend, milyard ABŞ dolları">
-            <ResponsiveContainer width="100%" height={310}>
-              <BarChart data={wbBarData} margin={{ top: 12, right: 12, left: -16, bottom: 0 }}>
-                <CartesianGrid stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" vertical={false} />
-                <XAxis dataKey="year" tickLine={false} axisLine={false} tick={{ fill: '#64748b', fontSize: 11 }} />
-                <YAxis tickLine={false} axisLine={false} tick={{ fill: '#64748b', fontSize: 11 }} tickFormatter={v => `$${v}`} />
-                <Tooltip formatter={(v) => [`$${v} mlrd`, 'ÜDM (USD)']} />
-                <Bar dataKey="gdp_mlrd" name="ÜDM (mlrd USD)" fill="var(--az-green)" radius={[2, 2, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartCard>
-        ) : (
-          <ChartCard title={`${year} sektor payları`} subtitle="Rəsmi ÜDM strukturu mövcuddursa göstərilir">
-            {sectors.length ? (
-              <div className="sector-list">
-                {sectors.map((item) => (
-                  <div key={item.sector} className="sector-score">
-                    <div>
-                      <span style={{ background: sectorColor(item.sector) }} />
-                      <strong>{item.sector}</strong>
-                    </div>
-                    <div className="share-track">
-                      <span style={{ width: `${item.share}%`, background: sectorColor(item.sector) }} />
-                    </div>
-                    <small>{azNumber(item.share, 1)}%</small>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="empty-search">Bu il üçün sektor payı panelə daxil edilməyib.</div>
-            )}
-          </ChartCard>
-        )}
-      </div>
-
-      <Card className="method-card" variant="borderless">
-        <h3>Metodoloji qeyd</h3>
-        <p>
-          KPI panelində rəsmi göstərici ilə metodoloji izah ayrılır. Rəqəm Dövlət Statistika
-          Komitəsinin dərc etdiyi göstəricidirsə, mənbə və dövr göstərilir. Dünya Bankı Open Data
-          API-si (api.worldbank.org) vasitəsilə ÜDM (USD), artım faizi, inflyasiya və işsizlik
-          göstəriciləri real vaxtda yüklənir.
-        </p>
-      </Card>
-    </div>
+        </div>
+      </Panel>
+    </>
   )
 }
