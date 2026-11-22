@@ -9,17 +9,17 @@ interface EmptyStateProps {
 
 export function EmptyState({
   title = 'Məlumat yoxdur',
-  description = 'Seçilmiş filtr üçün göstərici tapılmadı. İl və ya sektor filtrini dəyişin.',
+  description = 'Seçilmiş filtr üçün göstərici tapılmadı. İli və ya sektoru dəyişin.',
   action,
 }: EmptyStateProps) {
   return (
-    <div className="empty-panel" role="status">
-      <div className="empty-panel__icon">
-        <Inbox size={28} strokeWidth={1.5} />
+    <div className="empty" role="status">
+      <div className="empty__icon">
+        <Inbox size={26} strokeWidth={1.6} />
       </div>
       <h4>{title}</h4>
       <p>{description}</p>
-      {action ? <div className="empty-panel__action">{action}</div> : null}
+      {action ? <div className="mt-2">{action}</div> : null}
     </div>
   )
 }

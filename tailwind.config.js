@@ -2,11 +2,12 @@
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   darkMode: 'class',
+  corePlugins: { preflight: false },
   theme: {
     extend: {
       fontFamily: {
-        sans: ['IBM Plex Sans', 'Noto Sans', 'Segoe UI', 'sans-serif'],
-        display: ['IBM Plex Sans', 'Noto Sans', 'Segoe UI', 'sans-serif'],
+        sans: ['Onest Variable', 'Segoe UI', 'system-ui', 'sans-serif'],
+        display: ['Onest Variable', 'Segoe UI', 'system-ui', 'sans-serif'],
       },
       colors: {
         base: 'var(--bg-base)',
@@ -19,14 +20,7 @@ export default {
         'az-blue': 'var(--az-blue)',
         'az-red': 'var(--az-red)',
         'az-green': 'var(--az-green)',
-        teal: 'var(--teal)',
-        'teal-d': 'var(--teal-d)',
-        cyan: 'var(--cyan)',
-        blue: 'var(--blue)',
         amber: 'var(--amber)',
-        rose: 'var(--rose)',
-        violet: 'var(--violet)',
-        green: 'var(--green)',
         'text-primary': 'var(--text-primary)',
         'text-secondary': 'var(--text-secondary)',
         'text-muted': 'var(--text-muted)',
@@ -34,9 +28,6 @@ export default {
       boxShadow: {
         sm: 'var(--shadow-sm)',
         md: 'var(--shadow-md)',
-      },
-      transitionDuration: {
-        250: '250ms',
       },
     },
   },

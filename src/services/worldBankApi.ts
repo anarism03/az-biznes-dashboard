@@ -16,9 +16,9 @@ export const WB_INDICATORS: Record<WbSeriesKey, { code: string; label: string }>
   agriShare: { code: 'NV.AGR.TOTL.ZS', label: 'Kənd təsərrüfatı payı (ÜDM-in %-i)' },
 }
 
-async function fetchIndicator(indicatorCode: string, yearsBack = 12): Promise<WbPoint[]> {
+async function fetchIndicator(indicatorCode: string, yearsBack = 12, signal?: AbortSignal): Promise<WbPoint[]> {
   const url = `${BASE}/country/${COUNTRY}/indicator/${indicatorCode}?format=json&per_page=${yearsBack}&mrv=${yearsBack}`
-  const response = await fetch(url)
+  const response = await fetch(url, { signal })
   if (!response.ok) throw new Error(`World Bank API xətası: ${response.status}`)
   const json = (await response.json()) as [unknown, Array<{ date: string; value: number | null }> | undefined]
   const rawData = json[1]
@@ -29,11 +29,11 @@ async function fetchIndicator(indicatorCode: string, yearsBack = 12): Promise<Wb
     .sort((a, b) => Number(a.year) - Number(b.year))
 }
 
-export async function fetchAllAzerbaijanData(): Promise<WbDataset> {
+export async function fetchAllAzerbaijanData(signal?: AbortSignal): Promise<WbDataset> {
   const entries = Object.entries(WB_INDICATORS) as Array<[WbSeriesKey, { code: string; label: string }]>
   const results = await Promise.allSettled(
     entries.map(async ([key, { code }]) => {
-      const data = await fetchIndicator(code)
+      const data = await fetchIndicator(code, 12, signal)
       return [key, data] as const
     }),
   )
@@ -51,9 +51,13 @@ export async function fetchAllAzerbaijanData(): Promise<WbDataset> {
   return merged
 }
 
+/** Seçilmiş il üçün dəqiq dəyər; yoxdursa null (başqa ilin dəyəri səssizcə qaytarılmır). */
 export function getValueForYear(series: WbPoint[] = [], year: string | number): number | null {
-  const exact = series.find((d) => d.year === String(year))
-  if (exact) return exact.value
+  return series.find((d) => d.year === String(year))?.value ?? null
+}
+
+/** Seçilmiş il və ya ondan əvvəlki son mövcud il — dəyər faktiki ili ilə birlikdə qaytarılır. */
+export function getPointUpTo(series: WbPoint[] = [], year: string | number): WbPoint | null {
   const before = series.filter((d) => Number(d.year) <= Number(year))
-  return before.length ? before[before.length - 1].value : null
+  return before.length ? before[before.length - 1] : null
 }

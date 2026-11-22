@@ -6,13 +6,13 @@ interface BrandLogoProps {
   title?: string
 }
 
-/** Flat AZ flag stripes + flame mark (no gradients). */
+/** AZ bayrağı zolaqları + alov işarəsi. */
 export function BrandLogo({ size = 40, className = '', title }: BrandLogoProps) {
   const flame = Math.round(size * 0.52)
   return (
     <div
       className={`brand-logo ${className}`.trim()}
-      style={{ width: size, height: size }}
+      style={{ width: size, height: size, borderRadius: Math.round(size * 0.32) }}
       role={title ? 'img' : undefined}
       aria-label={title}
       aria-hidden={title ? undefined : true}

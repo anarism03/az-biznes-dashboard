@@ -17,3 +17,8 @@ test-results/
 *.jpeg
 *.webp
 *.gif
+
+# Dissertasiya qaralamaları açıq repoya düşməsin
+*.docx
+docx_content.txt
+*.tmp.mjs

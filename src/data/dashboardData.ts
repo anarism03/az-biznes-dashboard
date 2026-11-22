@@ -1,6 +1,5 @@
 import type {
   ChapterItem,
-  EmpiricalRow,
   KpiFrameworkRow,
   MacroRow,
   PlatformRow,
@@ -175,72 +174,86 @@ export const officialSectorSharesByYear: Record<string, SectorShare[]> = {
   ],
 }
 
+/**
+ * Platformaların keyfiyyət müqayisəsi (dissertasiya, Cədvəl 6).
+ * Rəqəmsal bal və reytinq hesablanmır: çəkilər konkret müəssisənin tələbindən asılıdır.
+ */
 export const platformComparison: PlatformRow[] = [
-  {
-    key: 'power-bi',
-    tool: 'Power BI',
-    governance: 88,
-    modeling: 91,
-    integration: 94,
-    cost: 82,
-    custom: 70,
-    bestFor: 'Korporativ BI, Microsoft ekosistemi, maliyyə dashboardları',
-  },
   {
     key: 'tableau',
     tool: 'Tableau',
-    governance: 84,
-    modeling: 86,
-    integration: 81,
-    cost: 66,
-    custom: 88,
-    bestFor: 'Vizual analitika, self-service BI, data storytelling',
+    focus: 'Vizual araşdırma',
+    exploration: 'İnteraktiv vizuallar və VizQL',
+    model: 'Hesablanan sahələr və məlumat modeli',
+    ecosystem: 'Tableau platforması və konnektorlar',
+    deploy: 'Cloud və Server variantları',
+    access: 'Platforma icazələri və paylaşma',
+    criterion: 'Tapşırıq və bacarıqla uyğunluq',
+  },
+  {
+    key: 'power-bi',
+    tool: 'Power BI',
+    focus: 'Model və hesabat inteqrasiyası',
+    exploration: 'İnteraktiv hesabat və vizuallar',
+    model: 'Model və DAX ölçüləri',
+    ecosystem: 'Microsoft xidmətləri ilə inteqrasiya',
+    deploy: 'Desktop, xidmət və server variantları',
+    access: 'Model və xidmət icazələri',
+    criterion: 'Mövcud infrastrukturla uyğunluq',
   },
   {
     key: 'looker',
     tool: 'Looker',
-    governance: 92,
-    modeling: 89,
-    integration: 87,
-    cost: 63,
-    custom: 74,
-    bestFor: 'Semantik data modeli, bulud analitikası və idarə olunan metriklər',
+    focus: 'Vahid metrik modeli',
+    exploration: 'Explore və modelə əsaslanan baxış',
+    model: 'LookML semantik modeli',
+    ecosystem: 'Google Cloud və verilənlər bazası modeli',
+    deploy: 'İdarə olunan Looker variantları',
+    access: 'Model və platforma icazələri',
+    criterion: 'Metrik idarəetməsi tələbləri',
   },
   {
     key: 'd3',
     tool: 'D3.js',
-    governance: 58,
-    modeling: 72,
-    integration: 73,
-    cost: 96,
-    custom: 99,
-    bestFor: 'Xüsusi qrafiklər, elmi prototip və interaktiv tədqiqat',
+    focus: 'Tam vizual nəzarət',
+    exploration: 'SVG/Canvas ilə xüsusi qrafiklər',
+    model: 'Model tətbiq kodunda qurulur',
+    ecosystem: 'Açıq mənbə, veb standartları',
+    deploy: 'İstənilən veb tətbiqə daxil edilir',
+    access: 'Tətbiqin öz giriş qaydaları',
+    criterion: 'Mühəndislik resursu',
   },
   {
     key: 'vega-lite',
     tool: 'Vega-Lite',
-    governance: 62,
-    modeling: 76,
-    integration: 77,
-    cost: 94,
-    custom: 86,
-    bestFor: 'Deklarativ qrafik spesifikasiyası, açıq mənbəli analitika',
+    focus: 'Deklarativ spesifikasiya',
+    exploration: 'Qrammatika əsaslı interaktiv qrafiklər',
+    model: 'JSON spesifikasiyası',
+    ecosystem: 'Açıq mənbə, Vega ekosistemi',
+    deploy: 'Veb, notebook və hesabatlar',
+    access: 'Tətbiqin öz giriş qaydaları',
+    criterion: 'Prototip sürəti',
   },
 ]
 
-export const empiricalImpact: EmpiricalRow[] = [
-  { metric: 'Qərar sürəti', before: 51, after: 78, delta: 27 },
-  { metric: 'KPI anlaşılırlığı', before: 47, after: 81, delta: 34 },
-  { metric: 'Hesabat xətaları', before: 39, after: 16, delta: -23 },
-  { metric: 'Komanda koordinasiyası', before: 55, after: 74, delta: 19 },
-  { metric: 'Proqnoz dəqiqliyi', before: 58, after: 71, delta: 13 },
+export const platformCriteria: { key: keyof PlatformRow; label: string }[] = [
+  { key: 'exploration', label: 'Vizual araşdırma' },
+  { key: 'model', label: 'Metrik modeli' },
+  { key: 'ecosystem', label: 'Ekosistem' },
+  { key: 'deploy', label: 'Yerləşdirmə' },
+  { key: 'access', label: 'Giriş və idarəetmə' },
+  { key: 'criterion', label: 'Yerli seçim meyarı' },
 ]
 
-export const adoptionTrend = [
-  { year: '2021', static: 62, interactive: 21, predictive: 7 },
-  { year: '2022', static: 57, interactive: 29, predictive: 10 },
-  { year: '2023', static: 48, interactive: 38, predictive: 16 },
-  { year: '2024', static: 39, interactive: 49, predictive: 23 },
+/** Çoxmeyarlı seçim metodologiyasının addımları (dissertasiya, 2.1). */
+export const selectionSteps = [
+  'İstifadəçi profillərini müəyyən edin',
+  'Kritik qərar ssenarilərini yazın',
+  'Məlumat mənbələrini inventarizasiya edin',
+  'Meyar çəkilərini biznes rəhbərləri ilə razılaşdırın',
+  'Qısa siyahını kiçik pilotda sınayın',
+  'Ümumi sahibolma xərcini və riskləri hesablayın',
+  'İdarəetmə modelini seçimlə birlikdə təsdiqləyin',
 ]
 
 export const kpiRows: KpiFrameworkRow[] = [
@@ -248,94 +261,129 @@ export const kpiRows: KpiFrameworkRow[] = [
     key: 'financial',
     perspective: 'Maliyyə',
     kpi: 'Gəlir artımı, EBITDA marjası, xərc-gəlir nisbəti',
-    chart: 'Xətt qrafiki, waterfall, variance bar',
+    chart: 'Xətt qrafiki, şəlalə qrafiki, fərq sütunları',
     decision: 'Büdcə bölgüsü və rentabellik qərarları',
   },
   {
     key: 'customer',
     perspective: 'Müştəri',
-    kpi: 'NPS, aktiv müştəri, təkrar alış, churn',
-    chart: 'Cohort, heatmap, funnel',
+    kpi: 'NPS, aktiv müştəri, təkrar alış, müştəri itkisi',
+    chart: 'Kohort cədvəli, istilik xəritəsi, huni',
     decision: 'Seqmentləşdirmə və xidmət keyfiyyəti',
   },
   {
     key: 'process',
     perspective: 'Daxili proses',
     kpi: 'SLA, dövriyyə müddəti, əməliyyat xətası',
-    chart: 'Box plot, control chart, sankey',
+    chart: 'Qutu diaqramı, nəzarət qrafiki, axın diaqramı',
     decision: 'Proses optimallaşdırması və risk azaldılması',
   },
   {
     key: 'learning',
     perspective: 'Öyrənmə və inkişaf',
-    kpi: 'Rəqəmsal bacarıq indeksi, təlim saatı, innovasiya payı',
-    chart: 'Radar, scorecard, trend',
+    kpi: 'Rəqəmsal bacarıq səviyyəsi, təlim saatı, innovasiya payı',
+    chart: 'Radar, göstərici kartı, trend',
     decision: 'İnsan kapitalı və analitika mədəniyyəti',
   },
 ]
 
+/** Məlumat xəttinin qatları (dissertasiya, Şəkil 4). Faiz və “hazırlıq balı” göstərilmir. */
 export const governanceLayers = [
-  { layer: 'Mənbə', status: 93, text: 'ERP, CRM, POS, dövlət açıq məlumatları və sorğu datası' },
-  { layer: 'ETL/ELT', status: 87, text: 'Təmizləmə, normallaşdırma, keyfiyyət testləri, tarixçə' },
-  { layer: 'Semantik model', status: 82, text: 'KPI lüğəti, metrik sahibi və razılaşdırılmış biznes anlayışları' },
-  { layer: 'Vizual qat', status: 91, text: 'Dashboard, drill-down, filtr, alert və mobil görünüş' },
-  { layer: 'Qərar dövrü', status: 76, text: 'Tövsiyə, icra sahibi, nəticə ölçümü və geribildirim' },
+  {
+    layer: 'Mənbə sistemləri',
+    text: 'ERP, CRM, POS, dövlət açıq məlumatları və sorğu cavabları',
+    checks: ['Mənbə sahibi təyin edilib', 'Yenilənmə tezliyi yazılıb'],
+  },
+  {
+    layer: 'İnteqrasiya və anbar',
+    text: 'Təmizləmə, normallaşdırma, keyfiyyət testləri və tarixçə',
+    checks: ['Boş və təkrar qeydlər yoxlanılır', 'Kənarlaşmalar qeyd olunur'],
+  },
+  {
+    layer: 'Semantik qat',
+    text: 'KPI lüğəti, metrik sahibi və razılaşdırılmış biznes anlayışları',
+    checks: ['Hər göstəricinin düsturu var', 'Ölçü vahidi və dövr göstərilir'],
+  },
+  {
+    layer: 'Vizual qat',
+    text: 'Panel, detal baxışı, filtr, xəbərdarlıq və mobil görünüş',
+    checks: ['Mənbə ili kartda görünür', 'Qismən il ayrıca işarələnir'],
+  },
+  {
+    layer: 'Qərar dövrü',
+    text: 'Tövsiyə, icra sahibi, nəticənin ölçülməsi və geribildirim',
+    checks: ['Qərar sahibi bəllidir', 'Nəticə göstəricisi seçilib'],
+  },
 ]
 
 export const chapterMap: ChapterItem[] = [
   {
-    title: 'Modul I',
-    subtitle: 'Strateji Analitika Mərkəzi',
-    points: ['Real vaxtda KPI izlənməsi', 'Risklərin idarə edilməsi', 'Proqnozlaşdırma modelləri', 'Maliyyə və əməliyyat hesabatları'],
+    title: 'I fəsil',
+    subtitle: 'Nəzəri-metodoloji əsaslar',
+    points: [
+      'Data vizuallaşdırmanın konseptual əsasları və təsnifatı',
+      'İnteraktiv dashboardun inkişafı, növləri və tendensiyalar',
+      'Ənənəvi hesabat ilə vizual analitikanın müqayisəsi',
+    ],
   },
   {
-    title: 'Modul II',
-    subtitle: 'Data İdarəetməsi və İnteqrasiya',
-    points: ['Məlumat arxitekturası', 'Bulud əsaslı sistemlər', 'Avtomatlaşdırılmış ETL prosesləri', 'Məlumat təhlükəsizliyi'],
+    title: 'II fəsil',
+    subtitle: 'Alətlərin tətbiqi və AzərDash',
+    points: [
+      'Tableau, Power BI və Looker-in funksional müqayisəsi',
+      'KPI çərçivəsinin dashboard arxitekturasına inteqrasiyası',
+      'D3.js, Vega-Lite və beynəlxalq İKT müqayisəsi',
+    ],
   },
   {
-    title: 'Modul III',
-    subtitle: 'Vizual Analiz və Qərarlar',
-    points: ['İnteraktiv qrafiklər', 'Trend analizləri', 'Gələcək biznes ssenariləri', 'Performans göstəriciləri'],
+    title: 'III fəsil',
+    subtitle: 'Empirik tədqiqat',
+    points: [
+      '26.10.2026 sorğusunun dizaynı (32 cavab, 29 uyğun)',
+      'İstifadə tezliyi ilə qərar hazırlığının çarpaz təhlili',
+      'Tətbiq maneələri və 90 günlük pilot yol xəritəsi',
+    ],
   },
 ]
 
 export const recommendations = [
-  'Dashboard hazırlanmazdan əvvəl KPI lüğəti və data governance qaydaları yazılmalıdır.',
-  'Rəhbər heyət üçün ümumi baxış, analitiklər üçün drill-down, əməliyyat komandası üçün alert rejimi ayrılmalıdır.',
-  'Rəng, ölçü və mövqe kodlaşdırması Gestalt və əlçatanlıq prinsipləri ilə yoxlanmalıdır.',
-  'Hər vizual nəticə qərar sahibi, vaxt pəncərəsi və ölçülən biznes nəticəsi ilə əlaqələndirilməlidir.',
+  'Müəssisədə vahid KPI kataloqu və semantik qat yaradılsın; hər göstəricinin düsturu, mənbəyi və sahibi yazılsın.',
+  'Dashboard layihəsi texniki quraşdırma kimi deyil, idarəetmə dəyişikliyi kimi planlaşdırılsın.',
+  'Panelə baxış tezliyi ilə qərar hazırlığında istifadə ayrıca ölçülsün: sorğuda 18 tez-tez istifadəçidən yalnız 7-si müntəzəm qərar istifadəsi bildirib.',
+  'Təlim konkret iş tapşırıqları (filtr, göstəricinin izahı, müqayisənin yoxlanılması) üzrə qurulsun.',
+  'Yeni panel 90 günlük pilotla, əvvəlcədən seçilmiş uğur meyarları ilə sınansın.',
+  'Vizual nəticə qərara çevrilməzdən əvvəl mənbə və dövr baxımından yoxlansın.',
 ]
 
 export const sourceLinks: SourceLink[] = [
   {
-    name: 'Dövlət Statistika Komitəsi',
-    detail: '2024-cü ildə ÜDM 126.3 mlrd manat, real artım 4.1%, qeyri-neft/qaz artımı 6.2%.',
+    name: 'Dövlət Statistika Komitəsi, 2024',
+    detail: '2024-cü ildə ÜDM 126,3 mlrd manat, real artım 4,1%, qeyri-neft/qaz artımı 6,2%.',
     url: 'https://stat.gov.az/news/index.php?id=6156&lang=en',
   },
   {
     name: 'Dövlət Statistika Komitəsi, 2025',
-    detail: '2025-ci ildə ÜDM 129.1 mlrd manat, real artım 1.4%, qeyri-neft/qaz artımı 2.7%.',
+    detail: '2025-ci ildə ÜDM 129,1 mlrd manat, real artım 1,4%, qeyri-neft/qaz artımı 2,7%.',
     url: 'https://www.stat.gov.az/news/index.php?id=6590&lang=en',
   },
   {
     name: 'Dövlət Statistika Komitəsi, 2026',
-    detail: '2026-cı ilin yanvar-aprel dövründə ÜDM 39.875 mlrd manat, real artım 0.2%.',
+    detail: '2026-cı ilin yanvar–aprel dövründə ÜDM 39,9 mlrd manat, real artım 0,2%. Tam il deyil.',
     url: 'https://www.stat.gov.az/news/index.php?id=6703&lang=en',
   },
   {
+    name: 'Dünya Bankı Open Data',
+    detail: 'ÜDM (USD), real artım, inflyasiya, işsizlik, ixrac, idxal və sektor payları; api.worldbank.org/v2.',
+    url: 'https://data.worldbank.org/country/azerbaijan',
+  },
+  {
     name: 'İqtisadiyyat Nazirliyi',
-    detail: 'Azərbaycan Respublikasında rəqəmsal iqtisadiyyatın inkişafı üzrə 2026-2029 strategiyası.',
+    detail: 'Rəqəmsal iqtisadiyyatın inkişafına dair 2026–2029-cu illər üçün Strategiya.',
     url: 'https://www.economy.gov.az/en/page/ganunvericilik/strategiyalar',
   },
   {
-    name: 'World Bank',
-    detail: 'Azerbaijan Monthly Economic Update, April 2026 makroiqtisadi kontekst.',
-    url: 'https://thedocs.worldbank.org/en/doc/79a6c37b829d34f7b13d9f2ebf162626-0080012026/original/AZE-MEU-APR-2026.pdf',
-  },
-  {
-    name: 'KPMG Qlobal Hesabatı',
-    detail: 'Qlobal iqtisadi artım və maliyyə bazarlarında biznes analitikası tətbiqi.',
-    url: 'https://home.kpmg/xx/en/home/insights.html',
+    name: 'İnnovasionnaya nauka, № 11-2-1/2026',
+    detail: 'Sardarova I., Ismayılzada A. Dashboard istifadəsi və qərar hazırlığının təsviri təhlili, s. 41–47.',
+    url: 'https://aeterna-ufa.ru',
   },
 ]

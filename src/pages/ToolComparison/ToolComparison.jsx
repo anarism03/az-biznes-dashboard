@@ -1,85 +1,118 @@
-import { Card, Table, Tag } from 'antd'
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Legend,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts'
-import { ChartCard } from '../../components/ui/ChartCard'
-import { platformComparison } from '../../data/dashboardData'
+import { useState } from 'react'
+import { motion } from 'motion/react'
+import { Info } from 'lucide-react'
+import { LiquidGlass } from '../../components/glass/LiquidGlass'
+import { Panel } from '../../components/ui/ChartCard'
+import { PageIntro } from '../../components/ui/PageIntro'
+import { platformComparison, platformCriteria, selectionSteps } from '../../data/dashboardData'
 
-const columns = [
-  { title: 'Platforma', dataIndex: 'tool', render: (value) => <strong>{value}</strong> },
-  { title: 'Governance', dataIndex: 'governance', sorter: (a, b) => a.governance - b.governance },
-  { title: 'Modeling', dataIndex: 'modeling', sorter: (a, b) => a.modeling - b.modeling },
-  { title: 'İnteqrasiya', dataIndex: 'integration', sorter: (a, b) => a.integration - b.integration },
-  { title: 'Xərc üstünlüyü', dataIndex: 'cost', sorter: (a, b) => a.cost - b.cost },
-  { title: 'Xüsusiləşdirmə', dataIndex: 'custom', sorter: (a, b) => a.custom - b.custom },
-  { title: 'Ən uyğun istifadə', dataIndex: 'bestFor' },
-]
+const TONE = { tableau: 'var(--az-blue)', 'power-bi': 'var(--amber)', looker: 'var(--az-green)', d3: 'var(--az-red)', 'vega-lite': 'var(--slate)' }
+const spring = { type: 'spring', bounce: 0.2, visualDuration: 0.38 }
 
 export function ToolComparison() {
-  const scored = platformComparison.map((item) => ({
-    ...item,
-    total: Math.round((item.governance + item.modeling + item.integration + item.cost + item.custom) / 5),
-  }))
+  const [focus, setFocus] = useState('tableau')
+  const tool = platformComparison.find((t) => t.key === focus)
 
   return (
-    <div className="page-stack">
+    <>
+      <PageIntro
+        kicker="Platforma seçimi"
+        title="Bir alət bütün hallar üçün deyil"
+        description="Tableau, Power BI və Looker kommersiya platformalarının, D3.js və Vega-Lite açıq mənbəli alətlərinin funksional müqayisəsi. Rəqəmsal bal və yekun reytinq hesablanmır: meyar çəkiləri konkret müəssisənin tələbləri ilə müəyyən edilir."
+      />
 
-      <div className="analytics-grid two-one">
-        <ChartCard title="Platforma skoru" subtitle="5 kriteriyanın orta balı">
-          <ResponsiveContainer width="100%" height={320}>
-            <BarChart data={scored} layout="vertical" margin={{ top: 12, right: 20, left: 20, bottom: 0 }}>
-              <CartesianGrid stroke="#e4e7ec" strokeDasharray="4 4" horizontal={false} />
-              <XAxis type="number" domain={[0, 100]} tickLine={false} axisLine={false} />
-              <YAxis type="category" dataKey="tool" tickLine={false} axisLine={false} width={78} />
-              <Tooltip />
-              <Bar dataKey="total" name="Ümumi skor" fill="var(--az-blue)" radius={[0, 4, 4, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <Card className="tool-pick-card" variant="borderless">
-          <Tag color="green">Tövsiyə</Tag>
-          <h3>Biznes analitikası üçün hibrid yanaşma</h3>
-          <p>
-            Korporativ tətbiqdə Power BI və ya Looker idarəetmə üstünlüyü verir. Müasir biznes və
-            xüsusi interaktiv qrafiklər üçün React + Recharts/D3 yanaşması daha çevik və sürətlidir.
-          </p>
-          <div className="mini-score">
-            <span>Governance</span>
-            <strong>92</strong>
-          </div>
-          <div className="mini-score">
-            <span>Xüsusiləşdirmə</span>
-            <strong>99</strong>
-          </div>
-        </Card>
+      <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))' }}>
+        {platformComparison.map((t) => {
+          const isActive = t.key === focus
+          return (
+            <LiquidGlass
+              key={t.key}
+              as="button"
+              type="button"
+              onClick={() => setFocus(t.key)}
+              className="kpi is-interactive press"
+              style={{ minHeight: 132, outline: isActive ? `2px solid ${TONE[t.key]}` : 'none', outlineOffset: -2 }}
+              aria-pressed={isActive}
+            >
+              <span className="kpi__label">
+                <span className="kpi__swatch" style={{ background: TONE[t.key] }} />
+                {t.tool}
+              </span>
+              <p className="text-[18px] font-bold leading-snug mt-3 mb-0">{t.focus}</p>
+              <div className="kpi__foot">{t.criterion}</div>
+            </LiquidGlass>
+          )
+        })}
       </div>
 
-      <ChartCard title="Funksional müqayisə cədvəli" subtitle="Sıralana bilən seçim matrisi">
-        <Table columns={columns} dataSource={platformComparison} pagination={false} />
-      </ChartCard>
+      <div className="grid-2-1">
+        <Panel title="Funksional müqayisə matrisi" subtitle="Rəsmi texniki sənədlər əsasında keyfiyyət müqayisəsi (dissertasiya, Cədvəl 6)">
+          <div className="overflow-x-auto">
+            <table className="data-table" style={{ minWidth: 760 }}>
+              <thead>
+                <tr>
+                  <th>Meyar</th>
+                  {platformComparison.map((t) => (
+                    <th key={t.key} style={{ color: t.key === focus ? TONE[t.key] : undefined }}>
+                      {t.tool}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {platformCriteria.map((c) => (
+                  <tr key={c.key}>
+                    <td className="font-semibold">{c.label}</td>
+                    {platformComparison.map((t) => (
+                      <td
+                        key={t.key}
+                        style={{
+                          background: t.key === focus ? `color-mix(in srgb, ${TONE[t.key]} 8%, transparent)` : undefined,
+                          transition: 'background .3s',
+                        }}
+                      >
+                        {t[c.key]}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Panel>
 
-      <ChartCard title="Kriteriyalar üzrə detal müqayisə" subtitle="Platformaların güclü və zəif tərəfləri">
-        <ResponsiveContainer width="100%" height={360}>
-          <BarChart data={platformComparison} margin={{ top: 12, right: 12, left: -12, bottom: 0 }}>
-            <CartesianGrid stroke="#e4e7ec" strokeDasharray="4 4" vertical={false} />
-            <XAxis dataKey="tool" tickLine={false} axisLine={false} />
-            <YAxis domain={[0, 100]} tickLine={false} axisLine={false} />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="governance" name="Governance" fill="var(--az-blue)" radius={[2, 2, 0, 0]} />
-            <Bar dataKey="integration" name="İnteqrasiya" fill="var(--az-green)" radius={[2, 2, 0, 0]} />
-            <Bar dataKey="custom" name="Xüsusiləşdirmə" fill="var(--az-red)" radius={[2, 2, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </ChartCard>
-    </div>
+        <Panel title={tool.tool} subtitle="Seçilmiş platformanın profili">
+          <motion.div key={tool.key} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={spring} className="grid gap-3">
+            {platformCriteria.map((c) => (
+              <div key={c.key} className="rounded-2xl p-3" style={{ background: 'color-mix(in srgb, var(--text-primary) 4%, transparent)' }}>
+                <div className="text-[12.5px] text-text-muted font-semibold">{c.label}</div>
+                <div className="text-[14.5px] font-semibold mt-0.5">{tool[c.key]}</div>
+              </div>
+            ))}
+          </motion.div>
+        </Panel>
+      </div>
+
+      <Panel title="Çoxmeyarlı seçim metodologiyası" subtitle="“Ən populyar alət” tələsindən qoruyan ardıcıllıq (dissertasiya, 2.1)">
+        <ol className="grid gap-3 m-0 p-0 list-none" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
+          {selectionSteps.map((s, i) => (
+            <li key={s} className="flex gap-3 items-start rounded-2xl p-3" style={{ background: 'color-mix(in srgb, var(--text-primary) 4%, transparent)' }}>
+              <span className="grid place-items-center w-8 h-8 rounded-full shrink-0 text-[14px] font-bold num" style={{ background: 'color-mix(in srgb, var(--az-blue) 13%, transparent)', color: 'var(--az-blue)' }}>
+                {i + 1}
+              </span>
+              <span className="text-[14.5px] leading-snug pt-1">{s}</span>
+            </li>
+          ))}
+        </ol>
+      </Panel>
+
+      <div className="note note--blue">
+        <Info size={18} />
+        <span>
+          Microsoft 365 istifadə edən təşkilatda Power BI-ın inteqrasiyası, mürəkkəb vizual araşdırma üçün Tableau, mərkəzləşdirilmiş metrik
+          idarəetməsi üçün Looker nəzərdən keçirilə bilər. Bunlar yerli şirkətlər arasında ölçülmüş seçim tezlikləri deyil.
+        </span>
+      </div>
+    </>
   )
 }

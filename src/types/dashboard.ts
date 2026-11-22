@@ -46,17 +46,23 @@ export type WbSeriesKey =
 
 export type WbDataset = Record<WbSeriesKey, WbPoint[]>
 
+export interface WbValue {
+  value: number | null
+  /** Dəyərin faktiki aid olduğu il (seçilmiş ildən fərqli ola bilər). */
+  year: string | null
+}
+
 export interface WbYearSnapshot {
-  gdpUsd: number | null
-  gdpGrowth: number | null
-  gdpPerCapita: number | null
-  inflation: number | null
-  exports: number | null
-  imports: number | null
-  fdi: number | null
-  unemployment: number | null
-  industryShare: number | null
-  agriShare: number | null
+  gdpUsd: WbValue
+  gdpGrowth: WbValue
+  gdpPerCapita: WbValue
+  inflation: WbValue
+  exports: WbValue
+  imports: WbValue
+  fdi: WbValue
+  unemployment: WbValue
+  industryShare: WbValue
+  agriShare: WbValue
 }
 
 export interface WbTimePoint {
@@ -70,45 +76,48 @@ export interface WbTimePoint {
   unemployment: number | null
 }
 
-export interface FilterTotals {
-  revenue: number
-  expense: number
-  profit: number
-  margin: number
-}
 
 export interface DashboardFilters {
   year: string
   setYear: (year: string) => void
+  stepYear: (delta: number) => void
   sector: string
   setSector: (sector: string) => void
   drillSector: string | null
   setDrillSector: (sector: string | null) => void
+  /** Sektoru filtr kimi tətbiq edir və detal panelini bir yeniləmədə bağlayır. */
+  applySectorFilter: (sector: string) => void
   sectors: SectorShare[]
-  totals: FilterTotals
   selectedMacro: MacroRow
   previousMacro: MacroRow | null
+  isPartialYear: boolean
   officialSectorShares: SectorShare[]
-  wbData: WbDataset | null
+  wbData: WbDataset
+  wbSource: 'live' | 'cache' | 'snapshot'
   wbLoading: boolean
   wbError: string | null
   fetchedAt: Date | null
-  wbYear: WbYearSnapshot | null
+  refetchWb: () => void
+  wbYear: WbYearSnapshot
   wbTimeSeries: WbTimePoint[]
   clearFilters: () => void
 }
 
+
 export interface KpiCardProps {
   label: string
-  value: number
+  value: number | null
   unit?: string
-  change?: number
-  changeText?: string
+  digits?: number
+  /** Əvvəlki ilə nisbətən faiz dəyişməsi; müqayisə mümkün deyilsə null. */
+  change?: number | null
+  changeLabel?: string
   source?: string
   tone?: KpiTone
   active?: boolean
   onClick?: () => void
-  loading?: boolean
+  spark?: number[]
+  sparkActiveIndex?: number
 }
 
 export interface IndicatorBar {
@@ -119,20 +128,15 @@ export interface IndicatorBar {
 export interface PlatformRow {
   key: string
   tool: string
-  governance: number
-  modeling: number
-  integration: number
-  cost: number
-  custom: number
-  bestFor: string
+  focus: string
+  exploration: string
+  model: string
+  ecosystem: string
+  deploy: string
+  access: string
+  criterion: string
 }
 
-export interface EmpiricalRow {
-  metric: string
-  before: number
-  after: number
-  delta: number
-}
 
 export interface KpiFrameworkRow {
   key: string

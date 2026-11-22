@@ -2,21 +2,23 @@
 <html lang="az">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta
       name="description"
-      content="AzərDash — biznesdə qərarvermə üçün qabaqcıl data vizuallaşdırma və interaktiv dashboard analizi"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
-      rel="stylesheet"
+      content="AzərDash — biznesdə qərarvermə üçün interaktiv vizual analitika: rəsmi makro göstəricilər, Dünya Bankı məlumatları və sorğu nəticələri."
     />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
-    <meta name="theme-color" content="#00b5e2" />
-    <title>AzərDash — Biznes Analitika</title>
+    <meta name="theme-color" content="#e6edf1" />
+    <title>AzərDash — Qərar üçün vizual analitika</title>
+    <script>
+      // Tema ilk boyamadan əvvəl tətbiq olunur ki, ekran yanıb-sönməsin
+      try {
+        var t = localStorage.getItem('az_dash_theme')
+        if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        if (t === 'dark') document.documentElement.classList.add('dark')
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>
