@@ -27,7 +27,6 @@ export function useAppTheme() {
     components: {
       Select: { optionSelectedBg: isDark ? 'rgba(60,198,236,0.16)' : 'rgba(0,148,189,0.1)' },
       Modal: { borderRadiusLG: 26 },
-      Drawer: { colorBgElevated: 'transparent' },
     },
   }
 }

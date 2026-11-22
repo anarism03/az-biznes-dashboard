@@ -48,8 +48,8 @@
 
     /* Liquid glass */
     --glass-fill: rgb(255 255 255 / 0.5);
-    --chrome-tint: rgb(255 255 255 / 0.62);
-    --glass-menu: rgb(255 255 255 / 0.74);
+    --chrome-tint: rgb(255 255 255 / 0.74);
+    --glass-menu: rgb(250 252 253 / 0.95);
     --glass-sat: 180%;
     --glass-bright: 1.05;
     --glass-rim-hi: rgb(255 255 255 / 0.95);
@@ -96,8 +96,8 @@
     --chart-tick: #8aa0b0;
 
     --glass-fill: rgb(14 40 58 / 0.48);
-    --chrome-tint: rgb(12 34 50 / 0.6);
-    --glass-menu: rgb(12 34 50 / 0.78);
+    --chrome-tint: rgb(10 30 44 / 0.74);
+    --glass-menu: rgb(9 27 40 / 0.95);
     --glass-sat: 165%;
     --glass-bright: 0.95;
     --glass-rim-hi: rgb(255 255 255 / 0.4);
@@ -1287,9 +1287,9 @@ html[data-theme-switch] ::view-transition-new(root) {
     position: fixed;
     inset: 0;
     z-index: 1000;
-    background: rgb(5 20 32 / 0.28);
-    -webkit-backdrop-filter: blur(6px);
-    backdrop-filter: blur(6px);
+    background: rgb(5 20 32 / 0.42);
+    -webkit-backdrop-filter: blur(14px) saturate(120%);
+    backdrop-filter: blur(14px) saturate(120%);
     display: grid;
     align-items: start;
     justify-items: center;
@@ -1382,16 +1382,18 @@ html[data-theme-switch] ::view-transition-new(root) {
     gap: 6px;
   }
 
-  /* ───────── Antd ilə uyğunlaşma ───────── */
+  /* ───────── Antd ilə uyğunlaşma: üst qatlar demək olar ki, qeyri-şəffafdır ───────── */
+  .ant-drawer .ant-drawer-section,
   .ant-drawer .ant-drawer-content,
   .ant-modal .ant-modal-content,
+  .ant-modal .ant-modal-container,
   .ant-dropdown .ant-dropdown-menu,
   .ant-select-dropdown,
   .ant-message-notice-content {
     background: var(--glass-menu) !important;
-    -webkit-backdrop-filter: blur(30px) saturate(var(--glass-sat)) brightness(var(--glass-bright));
-    backdrop-filter: blur(30px) saturate(var(--glass-sat)) brightness(var(--glass-bright));
-    box-shadow: var(--glass-inner), 0 0 0 0.5px var(--glass-hairline), 0 24px 60px -20px rgb(0 0 0 / 0.35) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(var(--glass-sat));
+    backdrop-filter: blur(40px) saturate(var(--glass-sat));
+    box-shadow: var(--glass-inner), 0 0 0 0.5px var(--glass-hairline), 0 30px 70px -24px rgb(0 0 0 / 0.45) !important;
   }
   .ant-dropdown .ant-dropdown-menu {
     border-radius: 18px !important;
@@ -1417,14 +1419,20 @@ html[data-theme-switch] ::view-transition-new(root) {
     margin: 12px;
     border-radius: 28px;
     overflow: hidden;
+    box-shadow: none !important;
   }
+  .ant-drawer .ant-drawer-section,
   .ant-drawer .ant-drawer-content {
     border-radius: 28px;
   }
+  .ant-drawer .ant-drawer-header {
+    border-bottom: 1px solid var(--border) !important;
+  }
   .ant-drawer-mask,
   .ant-modal-mask {
-    -webkit-backdrop-filter: blur(4px);
-    backdrop-filter: blur(4px);
+    background: rgb(5 20 32 / 0.42) !important;
+    -webkit-backdrop-filter: blur(14px) saturate(120%);
+    backdrop-filter: blur(14px) saturate(120%);
   }
 
   /* ───────── Detal paneli ───────── */
